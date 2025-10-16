@@ -1,0 +1,23 @@
+* {
+  background-color: #333;
+  color: #999;
+}
+
+#nav-bar {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  background-color: #112;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav-link {
+  background-color: #112;
+  font-size: 1.6rem;
+  padding: 12px;
+}
