@@ -8,6 +8,7 @@ import { EditBookPage } from './pages/EditBookPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { RecommendationPage } from './pages/RecommendationPage';
 import { YourBooksPage } from './pages/YourBooksPage';
+import { CreateAccountPage } from './pages/CreateAccountPage';
 
 
 function App() {
@@ -29,6 +30,7 @@ function AppContent() {
       <Route path="/bookInfo" element={<BookInfoPage />} />
       <Route path="/recommendation" element={<RecommendationPage />} />
       <Route path="/yourBooks" element={<YourBooksPage />} />
+      <Route path="/createAccount" element={<CreateAccountPage />} />
     </Routes>
   )
 }
