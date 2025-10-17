@@ -22,16 +22,42 @@
   padding: 12px;
 }
 
-#login-div {
+.open-div {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
 }
 
-#login-form {
+.open-div-center, .open-div-right, .open-div-left {
   display: flex;
   flex-direction: column;
   align-items: center;
+  flex: 1;
+  min-width: 0;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+#login-form, #create-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  padding: 30px;
+  border: 4px solid #112;
+  border-radius: 20%;
+  background-color: #223;
+}
+
+#login-form > label, #create-form > label {
+  background-color: #223;
+  margin-top: 5px;
+}
+
+#login-link, #create-link {
+  background-color: #223;
 }
 
 h1 {
@@ -40,6 +66,10 @@ h1 {
 
 h2 {
   font-size: 1.5rem;
+}
+
+#login-header, #login-subheader {
+  text-align: center;
 }
 
 .submit-button {
@@ -53,4 +83,18 @@ h2 {
 .submit-button:hover {
   background-color: #223;
   cursor: pointer;
+}
+
+.open-about {
+  max-width: 60%;
+  text-align: center;
+  font-size: 2rem;
+  background-color: #223;
+  border: 4px solid #112;
+  border-radius: 20%;
+  padding: 15px;
+}
+
+#create-header {
+  text-align: center;
 }
