@@ -22,7 +22,7 @@
   padding: 12px;
 }
 
-.open-div {
+.open-div, #home-div {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -37,6 +37,20 @@
   min-width: 0;
   flex-shrink: 0;
   box-sizing: border-box;
+}
+
+#home-div-left, #home-div-right {
+  display: flex;
+  flex-direction: column;
+}
+
+#home-div-left {
+  flex: 3;
+  margin-right: 40px;
+}
+
+#home-div-right {
+  flex: 1;
 }
 
 #login-form, #create-form {
@@ -95,6 +109,83 @@ h2 {
   padding: 15px;
 }
 
-#create-header {
+#home-about {
+  max-width: 75%;
+  margin-top: 400px;
+  padding: 25px;
+}
+
+#create-header, #home-header {
   text-align: center;
+}
+
+#read-counts-div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+
+#read-this-year-div, #read-all-time-div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #223;
+  border: 4px solid #112;
+  border-radius: 20%;
+  padding: 20px;
+}
+
+#read-this-year-div > h1, #read-this-year-div > p, #read-all-time-div > h1, #read-all-time-div > p {
+  background-color: #223;
+}
+
+#read-this-year-div > p, #read-all-time-div > p {
+  font-size: 1.5rem;
+}
+
+#homepage-shelf-div, .shelf-books {
+  display: flex;
+  flex-direction: row;
+  background-color: rgb(26, 26, 18);
+  border: 6px double rgb(139, 139, 131);
+}
+
+.shelf-title, .shelf-title > p {
+  background-color: rgb(26, 26, 18);
+}
+
+#recently-read, #currently-reading {
+  display: flex;
+  flex-direction: column;
+}
+
+#currently-reading {
+  flex: 1
+}
+
+#recently-read {
+  flex: 2
+}
+
+.book-spine-1, .book-spine-2 {
+  width: 30px;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.book-spine-1, .book-spine-1 > .vertical-text {
+  background-color: rgb(43, 5, 5);
+}
+
+.book-spine-2, .book-spine-2 > .vertical-text {
+  background-color: rgb(19, 19, 157);
+}
+
+.vertical-text {
+  transform: rotate(90deg);
+  font-size: .5rem;
 }
