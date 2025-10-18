@@ -21,7 +21,7 @@ export function CreateAccountPage() {
                     <input id="password" type="password" required />
                     <label htmlFor="confirm-password">Confirm Password: </label>
                     <input id="confirm-password" type="password" required />
-                    <Link to="/home" id="create-link"><button className="submit-button">Create Account</button></Link>
+                    <Link to="/home" id="create-link"><button className="button-class">Create Account</button></Link>
                 </form>
             </div>
             <div className="open-div-right">

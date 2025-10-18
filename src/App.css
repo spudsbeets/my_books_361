@@ -86,7 +86,7 @@ h2 {
   text-align: center;
 }
 
-.submit-button {
+.button-class {
   font-size: 1.5rem;
   background-color: #112;
   padding: 12px;
@@ -94,7 +94,7 @@ h2 {
   border-radius: 8px;
 }
 
-.submit-button:hover {
+.button-class:hover {
   background-color: #223;
   cursor: pointer;
 }
@@ -110,13 +110,29 @@ h2 {
 }
 
 #home-about {
-  max-width: 75%;
   margin-top: 400px;
+}
+
+#your-books-about {
+  text-align: center;
+  font-size: 1.5rem;
+  background-color: #223;
+  border: 4px solid #112;
+  border-radius: 20%;
+  max-width: 25%;
   padding: 25px;
+  position: fixed;
+  bottom: 0;
+  right: 10;
+  margin: 0 10px 10px 0;
 }
 
 #create-header, #home-header {
   text-align: center;
+}
+
+#home-header {
+  font-size: 3rem;
 }
 
 #read-counts-div {
@@ -144,6 +160,10 @@ h2 {
   font-size: 1.5rem;
 }
 
+#homepage-shelf-div {
+  box-shadow: 0 4px 10px rgb(147, 147, 134);
+}
+
 #homepage-shelf-div, .shelf-books {
   display: flex;
   flex-direction: row;
@@ -153,6 +173,10 @@ h2 {
 
 .shelf-title, .shelf-title > p {
   background-color: rgb(26, 26, 18);
+}
+
+.shelf-title {
+  padding-left: 8px;
 }
 
 #recently-read, #currently-reading {
@@ -181,11 +205,264 @@ h2 {
   background-color: rgb(43, 5, 5);
 }
 
+.book-spine-1 {
+  border: 3px solid rgb(32, 2, 2);
+}
+
 .book-spine-2, .book-spine-2 > .vertical-text {
   background-color: rgb(19, 19, 157);
 }
 
+.book-spine-2 {
+  border: 3px solid rgb(12, 12, 126);
+}
+
 .vertical-text {
-  transform: rotate(90deg);
-  font-size: .5rem;
+  writing-mode: vertical-lr;
+  font-size: .6rem;
+}
+
+#your-books-div {
+  display: flex;
+  flex-direction: row;
+}
+
+#your-books-right-div, #your-books-left-div {
+  display: flex;
+  flex-direction: column
+}
+
+#your-books-left-div {
+  flex: 3;
+}
+
+#your-books-right-div {
+  flex: 1;
+}
+
+.basic-book-div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #223;
+  padding: 15px;
+  margin: 0 10px 10px 10px;
+  max-width: 160px;
+  justify-content: space-evenly;
+}
+
+.book-title, .book-author, .star-count, .more-info-link {
+  background-color: #223;
+  margin: 4px;
+  text-align: center;
+}
+
+.book-cover {
+  width: 140px;
+  height: 200px;
+}
+
+.your-books-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap
+}
+
+.your-books-header {
+  font-size: 1.6rem;
+  margin-left: 10px;
+}
+
+#book-info-div {
+  display: flex;
+  flex-direction: row;
+}
+
+#book-info-left-div, #book-info-right-div, #book-info-center-div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+#book-info-left-div, #book-info-center-div {
+  height: 100vh;
+}
+
+#book-info-left-div {
+  margin-left: 15px;
+}
+
+.book-title-info, .book-author-info, .book-publisher-info, .book-publication-date-info, .book-page-count-info, .book-isbn-info {
+  text-align: center;
+  margin: 10px 0 10px 0;
+}
+
+.book-title-info, .book-author-info {
+  font-size: 1.5rem;
+}
+
+.book-info-extra-info {
+  border: 2px solid #112;
+  border-radius: 20%;
+  padding: 15px;
+  background-color: #223;
+}
+
+.book-info-extra-info > p {
+  background-color: #223;
+}
+
+.book-status-div > select {
+  font-size: 1.5rem;
+  background-color: #223;
+  text-align: center;
+}
+
+.book-info-synopsis-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 0 0 75%;
+  background-color: #223;
+  border: solid 4px #112;
+  border-radius: 20%;
+  margin-bottom: 25px;
+}
+
+.book-synopsis-info {
+  flex: 3;
+  background-color: #223;
+  font-size: 1.2rem;
+  padding: 20px;
+  text-align: center;
+}
+
+.book-status-div {
+  flex: 1;
+}
+
+.personal-review-div {
+  margin-top: 400px;
+  text-align: center;
+  width: 75%;  
+  background-color: #223;
+  border: solid 4px #112;
+  border-radius: 20%;
+  padding: 15px;
+}
+
+.personal-review-div > p {
+  background-color: #223;
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  pointer-events: auto;
+}
+
+#delete-popup-div {
+  text-align: center;
+  padding: 25px;
+  background-color: #223;
+  border: 5px solid #112;
+  border-radius: 25%;
+}
+
+#delete-popup-message {
+  font-size: 1.5rem;
+  background-color: #223;
+}
+
+#delete-popup-options-div, #delete-confirm-link {
+  background-color: #223;
+}
+
+#update-review-popup-div {
+  display: flex;
+  flex-direction: column;
+  background-color: #223;
+  border: 5px solid #112;
+  border-radius: 25%;
+  padding: 25px;
+}
+
+#update-review-input {
+  font-size: 1.2rem;
+  margin: 20px 0 20px 0;
+}
+
+#profile-div {
+  display: flex;
+  flex-direction: row;
+}
+
+#profile-div-left {
+  flex: 2;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#profile-div-right {
+  flex: 1;
+}
+
+#profile-about {
+  margin-top: 400px;
+  text-align: center;
+  font-size: 1.5rem;
+  background-color: #223;
+  border: 4px solid #112;
+  border-radius: 20%;
+  padding: 70px 25px 70px 25px;
+  width: 75%;
+}
+
+#profile-greeting {
+  font-size: 3rem;
+}
+
+#profile-info-div {
+  background-color: #223;
+  border: 4px solid #112;
+  border-radius: 20%;
+  display: flex;
+  flex-direction: column;
+  padding: 40px;
+  margin: 40px 0 40px 0;
+}
+
+.profile-info {
+  background-color: #223;
+  font-size: 1.5rem;
+}
+
+#update-profile-popup-div {
+  background-color: #223;
+  border: solid 5px #112;
+  border-radius: 25%;
+  padding: 30px;
+}
+
+#update-profile-popup-form {
+  display: flex;
+  flex-direction: column;
+  background-color: #223;
+}
+
+#update-profile-popup-form > label, #update-profile-popup-form > input {
+  background-color: #223;
+  font-size: 1.5rem;
+  margin: 4px 0 4px 0;
 }

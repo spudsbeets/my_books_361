@@ -14,7 +14,7 @@ export function LoginPage() {
                     <input id="email" type="email" />
                     <label htmlFor="password">Password: </label>
                     <input id="password" type="password" />
-                    <Link to="/home" id="login-link"><button className="submit-button">Login</button></Link>
+                    <Link to="/home" id="login-link"><button className="button-class">Login</button></Link>
                 </form>
                 <Link to="/createAccount">Don't have an account? Create one here!</Link>
             </div>
