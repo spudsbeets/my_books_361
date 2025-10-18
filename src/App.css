@@ -106,11 +106,13 @@ h2 {
   background-color: #223;
   border: 4px solid #112;
   border-radius: 20%;
-  padding: 15px;
+  padding: 25px;
 }
 
 #home-about {
   margin-top: 400px;
+  padding: 30px;
+  margin-left: 50px;
 }
 
 #your-books-about {
@@ -465,4 +467,160 @@ h2 {
   background-color: #223;
   font-size: 1.5rem;
   margin: 4px 0 4px 0;
+}
+
+#add-book-div, #edit-book-div {
+  display: flex;
+  flex-direction: row;
+}
+
+#edit-book-div {
+  margin: 30px 0 0 20px;
+}
+
+#add-book-div-left, #edit-book-div-left {
+  display: flex;
+  flex-direction: column;
+  flex: 3;
+  margin-left: 20px;
+}
+
+#add-book-div-right, #edit-book-div-right {
+  flex: 1;
+}
+
+#add-book-form, #edit-book-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+#add-book-search-div {
+  flex: 1;
+  margin: 10px 0 10px 0;
+}
+
+#add-book-search-div > label, #add-book-search-div > input, #add-book-search-div > #search-by-dropdown {
+  font-size: 1.5rem;
+}
+
+#add-book-form-div, #edit-book-form-div {
+  display: flex;
+  flex-direction: column;
+  flex: 2;
+  background-color: #223;
+  border: solid 5px #112;
+  border-radius: 20%;
+  padding: 40px;
+  align-items: center;
+  width: 70%;
+}
+
+#add-book-form-div > h3, #add-book-form-div > form, #add-book-form-div > form > label, #edit-book-form-div > h3, #edit-book-form-div > form, #edit-book-form-div > form > label {
+  background-color: #223;
+}
+
+#book-search {
+  margin: 0 20px 0 20px;
+  width: 400px;
+}
+
+#add-book-about, #edit-book-about {
+  text-align: center;
+  font-size: 1.5rem;
+  background-color: #223;
+  border: 4px solid #112;
+  border-radius: 20%;
+  max-width: 75%;
+  padding: 25px;
+  margin-top: 350px;
+}
+
+#add-book-header, #edit-book-header {
+  font-size: 2rem;
+}
+
+#add-failure-popup, #add-success-popup, #edit-success-popup, #edit-failure-popup {
+  display: flex;
+  flex-direction: column;
+  background-color: #223;
+  padding: 50px;
+  border: 5px solid #112;
+  border-radius: 20%;
+}
+
+#add-failure-popup > p, #add-success-popup > p, #edit-failure-popup > p, #edit-success-popup > p {
+  background-color: #223;
+  font-size: 2.5rem;
+}
+
+#add-failure-popup > button, #add-success-popup > button, #edit-failure-popup > p, #edit-success-popup > p {
+  font-size: 1.5rem;
+}
+
+#recommendation-div {
+  display: flex;
+  flex-direction: row;
+}
+
+#recommendation-div-left {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+}
+
+#recommendation-div-right {
+  flex: 1;
+}
+
+#given-recommendation-div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+#curated-recommendation-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  padding: 30px;
+  border: 4px solid #112;
+  border-radius: 20%;
+  background-color: #223;
+  margin: 15px 30px 0 0;
+}
+
+#curated-recommendation-form > label {
+  background-color: #223;
+  font-size: 1.5rem;
+}
+
+#curated-recommendation-form > select, #curated-recommendation-form > input {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+#recommendation-mode-div, #curated-recommendation-div {
+  display: flex;
+  flex-direction: row;
+}
+
+#recommendation-header {
+  font-size: 2.2rem;
+}
+
+#recommendation-about {
+  text-align: center;
+  font-size: 1.5rem;
+  background-color: #223;
+  border: 4px solid #112;
+  border-radius: 20%;
+  max-width: 75%;
+  padding: 25px;
+  margin-top: 350px;
 }
