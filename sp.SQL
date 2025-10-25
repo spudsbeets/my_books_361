@@ -1,0 +1,2 @@
+-- TABLES: Users, Books
+-- INTERSECTION TABLES: UserBooks (contains wishlist, etc.), UserReviews
