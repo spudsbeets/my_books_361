@@ -12,8 +12,16 @@ export async function searchBooks() {
     console.log("search books")
 }
 
-export async function addBook() {
-    console.log("add book")
+export async function addBook(req, res) {
+    const { title, authorFirst, authorLast, publisher, publicationDate, pageCount, isbn } = req.body;
+    const coverImg = req.file ? req.file.filename: null;
+
+    try {
+        await pool.query("INSERT INTO Books (title, authorFirst, authorLast, publisher, publicationDate, pageCount, isbn, coverImg) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [title, authorFirst, authorLast, publisher, publicationDate, pageCount, isbn, coverImg])
+        res.status(201).json({ message: "Book added successfully!" })
+    } catch(err) {
+        res.status(500).json({ error: err.message });
+    }
 }
 
 export async function addReview() {

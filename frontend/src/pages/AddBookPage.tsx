@@ -7,15 +7,26 @@ export function AddBookPage() {
     const [isSuccessPopup, setSuccessPopup] = useState<boolean>(false)
     const [isFailurePopup, setFailurePopup] = useState<boolean>(false)
 
-    function validateInput(event: React.FormEvent): void {
-        event.preventDefault()
+    async function validateInput(event: React.FormEvent) {
+        event.preventDefault();
         
-        const input = document.getElementById("isbn") as HTMLInputElement
+        const form = event.target as HTMLFormElement
+        const formData = new FormData(form);
 
-        if (isNaN(Number(input.value)) || input.value.length === 0) {
-            setFailurePopup(true)
-        } else {
-            setSuccessPopup(true)
+        try {
+            const response = await fetch("/api/books", {
+            method: "POST",
+            body: formData,
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                setSuccessPopup(true)
+            } else {
+                setFailurePopup(true)
+            }
+        } catch (err) {
+            console.error(err);
         }
     }
 
@@ -37,19 +48,21 @@ export function AddBookPage() {
                     <h3 id="add-book-header">Add Book</h3>
                     <form id="add-book-form" onSubmit={validateInput}>
                         <label htmlFor="title">Title: </label>
-                        <input id="title" type="text" />
+                        <input id="title" name="title" type="text" />
                         <label htmlFor="author-first">Author First Name: </label>
-                        <input id="author-first" type="text" />
+                        <input id="author-first" name="authorFirst" type="text" />
                         <label htmlFor="author-last">Author Last Name: </label>
-                        <input id="author-last" type="text" />
+                        <input id="author-last" name="authorLast" type="text" />
                         <label htmlFor="publisher">Publisher: </label>
-                        <input id="publisher" type="text" />
+                        <input id="publisher" name="publisher" type="text" />
                         <label htmlFor="publication-date">Publication Date: </label>
-                        <input id="publication-date" type="date" />
+                        <input id="publication-date" name="publicationDate" type="date" />
                         <label htmlFor="page-count">Page Count: </label>
-                        <input id="page-count" type="number" />
+                        <input id="page-count" name="pageCount" type="number" />
                         <label htmlFor="isbn">ISBN-13: </label>
-                        <input id="isbn" type="text" required />
+                        <input id="isbn" name="isbn" type="text" required />
+                        <label htmlFor="coverImg">Cover Image:</label>
+                        <input id="coverImg" name="coverImg" type="file" accept="image/*" />
                         <button className="button-class" type="submit">Add Book</button>
                     </form>
                 </div>

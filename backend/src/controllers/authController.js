@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import pool from "../db.js";
 
-export async function registerUser() {
+export async function registerUser(req, res) {
     const { firstName, lastName, birthdate, email, password } = req.body
 
     try {
@@ -14,7 +14,7 @@ export async function registerUser() {
     }
 }
 
-export async function loginUser() {
+export async function loginUser(req, res) {
     const { email, password } = req.body;
     try {
         // Check if user is present in DB
