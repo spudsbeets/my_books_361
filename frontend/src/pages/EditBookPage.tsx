@@ -28,19 +28,23 @@ export function EditBookPage() {
                     <h3 id="edit-book-header">Edit Book</h3>
                     <form id="edit-book-form" onSubmit={validateInput}>
                         <label htmlFor="title-edit">Title: </label>
-                        <input id="title-edit" type="text" />
+                        <input id="title-edit" name="title" type="text" required />
                         <label htmlFor="author-first-edit">Author First Name: </label>
-                        <input id="author-first-edit" type="text" />
+                        <input id="author-first-edit" name="authorFirst" type="text" />
                         <label htmlFor="author-last-edit">Author Last Name: </label>
-                        <input id="author-last-edit" type="text" />
+                        <input id="author-last-edit" name="authorLast" type="text" required />
                         <label htmlFor="publisher-edit">Publisher: </label>
-                        <input id="publisher-edit" type="text" />
+                        <input id="publisher-edit" name="publisher" type="text" />
                         <label htmlFor="publication-date-edit">Publication Date: </label>
-                        <input id="publication-date-edit" type="date" />
+                        <input id="publication-date-edit" name="publicationDate" type="date" />
                         <label htmlFor="page-count-edit">Page Count: </label>
-                        <input id="page-count-edit" type="number" />
+                        <input id="page-count-edit" name="pageCount" type="number" />
                         <label htmlFor="isbn-edit">ISBN-13: </label>
-                        <input id="isbn-edit" type="text" required />
+                        <input id="isbn-edit" type="text" name="isbn" required />
+                        <label htmlFor="synopsis-edit">Synopsis: </label>
+                        <input id="synopsis-edit" name="synopsis" type="text" />
+                        <label htmlFor="coverImg-edit">Cover Image:</label>
+                        <input id="coverImg-edit" name="coverImg" type="file" accept="image/*" />
                         <button className="button-class" type="submit">Update Book</button>
                     </form>
                 </div>

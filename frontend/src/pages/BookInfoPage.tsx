@@ -21,6 +21,7 @@ export function BookInfoPage() {
                     <p className="book-publication-date-info">Publication Date: 09-24-24</p>
                     <p className="book-page-count-info">Page Count: 448 pgs</p>
                     <p className="book-isbn-info">ISBN-13: 9780571365463</p>
+                    <p className="book-genre-info">Genre: Fiction</p>
                 </div>
                 <div className="delete-and-edit-div">
                     <button className="button-class" onClick={() => setDeletePopup(true)}>Delete</button>

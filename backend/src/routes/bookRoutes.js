@@ -1,5 +1,5 @@
 import express from "express";
-import { authenticate } from "../middleware/authenticate.js";
+import { authenticate } from "../middleware/authMiddleware.js";
 import { getBooksByStatus, addBook, addReview, getRecommendation, searchBooks, updateBook, updateReview, updateProfile, deleteBook } from "../controllers/bookController.js";
 import multer from "multer";
 import path from "path";
@@ -28,11 +28,12 @@ router.get("/books/search", authenticate, searchBooks); // Search by Author, Tit
 
 // POST
 router.post("/books", authenticate, upload.single("coverImg"), addBook); // Add a book to the database
-router.post("/books/:id/reviews", authenticate, addReview); // Add a user review to a book
+router.post("/books/:bookID/review", authenticate, addReview); // Add a review
+
 
 // PUT
 router.put("/books/:id", authenticate, updateBook); // Update book information
-router.put("/books/:id/reviews/:reviewId", authenticate, updateReview); // Update a user review
+router.put("/books/:bookID/review", authenticate, updateReview); // Update a user review
 router.put("/users/profile", authenticate, updateProfile); // Update the user profile
 
 // DELETE

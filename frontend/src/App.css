@@ -295,7 +295,7 @@ h2 {
   margin-left: 15px;
 }
 
-.book-title-info, .book-author-info, .book-publisher-info, .book-publication-date-info, .book-page-count-info, .book-isbn-info {
+.book-title-info, .book-author-info, .book-publisher-info, .book-publication-date-info, .book-page-count-info, .book-isbn-info, .book-genre-info {
   text-align: center;
   margin: 10px 0 10px 0;
 }

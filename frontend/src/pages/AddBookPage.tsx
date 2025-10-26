@@ -48,11 +48,11 @@ export function AddBookPage() {
                     <h3 id="add-book-header">Add Book</h3>
                     <form id="add-book-form" onSubmit={validateInput}>
                         <label htmlFor="title">Title: </label>
-                        <input id="title" name="title" type="text" />
+                        <input id="title" name="title" type="text" required />
                         <label htmlFor="author-first">Author First Name: </label>
                         <input id="author-first" name="authorFirst" type="text" />
                         <label htmlFor="author-last">Author Last Name: </label>
-                        <input id="author-last" name="authorLast" type="text" />
+                        <input id="author-last" name="authorLast" type="text" required />
                         <label htmlFor="publisher">Publisher: </label>
                         <input id="publisher" name="publisher" type="text" />
                         <label htmlFor="publication-date">Publication Date: </label>
@@ -61,6 +61,8 @@ export function AddBookPage() {
                         <input id="page-count" name="pageCount" type="number" />
                         <label htmlFor="isbn">ISBN-13: </label>
                         <input id="isbn" name="isbn" type="text" required />
+                        <label htmlFor="synopsis">Synopsis: </label>
+                        <input id="synopsis" name="synopsis" type="text" />
                         <label htmlFor="coverImg">Cover Image:</label>
                         <input id="coverImg" name="coverImg" type="file" accept="image/*" />
                         <button className="button-class" type="submit">Add Book</button>

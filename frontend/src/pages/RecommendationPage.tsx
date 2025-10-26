@@ -41,7 +41,7 @@ export function RecommendationPage() {
                         overflow: "hidden",
                     }}>
                         <label htmlFor="genre-dropdown-1">Genre 1: </label>
-                        <select id="genre-dropdown-1" name="genre-choice-1">
+                        <select id="genre-dropdown-1" name="genre1">
                             <option value="fantasy">Fantasy</option>
                             <option value="sci-fi" selected>Sci Fi</option>
                             <option value="classics">Classics</option>
@@ -49,15 +49,13 @@ export function RecommendationPage() {
                             <option value="manga">Manga</option>
                         </select>
                         <label htmlFor="genre-dropdown-2">Genre 2: </label>
-                        <select id="genre-dropdown-2" name="genre-choice-2">
+                        <select id="genre-dropdown-2" name="genre2">
                             <option value="fantasy" selected>Fantasy</option>
                             <option value="sci-fi">Sci Fi</option>
                             <option value="classics">Classics</option>
                             <option value="history">History</option>
                             <option value="manga">Manga</option>
                         </select>
-                        <label htmlFor="favorite-author">A Favorite Author: </label>
-                        <input id="favorite-author" type="text"></input>
                         <button className="button-class" type="submit">Get Curated Recommendation</button>
                     </form>
                     <div id="given-recommendation-div" style={{
