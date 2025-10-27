@@ -1,10 +1,7 @@
 -- TABLES: Users, Books
 -- INTERSECTION TABLES: UserBooks (contains wishlist, etc.), UserReviews
 
-DROP PROCEDURE IF EXISTS sp_load_db;
-DELIMITER $$
-CREATE PROCEDURE sp_load_db()
-BEGIN
+
     SET FOREIGN_KEY_CHECKS=0;
 
     -- ------------------------------------------
@@ -50,6 +47,7 @@ BEGIN
         `userBookID` INT NOT NULL AUTO_INCREMENT,
         `userID` INT NOT NULL,
         `bookID` INT NOT NULL,
+        `completedAt` DATE NULL,
         status ENUM('wishlist', 'reading', 'read') NOT NULL,
         PRIMARY KEY(`userBookID`),
         FOREIGN KEY(`userID`) REFERENCES `Users`(`userID`) ON DELETE CASCADE,
@@ -72,7 +70,7 @@ BEGIN
         FOREIGN KEY(`userID`) REFERENCES `Users`(`userID`) ON DELETE CASCADE,
         FOREIGN KEY(`bookID`) REFERENCES `Books`(`bookID`) ON DELETE CASCADE
     )
-    ENGINE=InnoDB
+    ENGINE=InnoDB;
 
     -- ------------------------------------------
     -- Insert sample books
@@ -91,7 +89,31 @@ BEGIN
     ('Ulysses', 'James', 'Joyce', 'Vintage', '1990-06-16', 783, '9780679722762', 'Classics', 'A day-in-the-life epic in Dublin, following Leopold Bloom, exploring ordinary events with extraordinary linguistic experimentation and deep psychological insight.', 'uploads/ulysses.png'),
     ('Moby Dick', 'Herman', 'Melville', 'Penguin', '2002-12-31', 720, '9780142437247', 'Classics', 'Captain Ahab''s obsessive hunt for the white whale, Moby Dick, unfolds alongside rich explorations of whaling, philosophy, and the human spirit.', 'uploads/moby-dick.png');
 
-SET FOREIGN_KEY_CHECKS=1;
+    INSERT INTO Users (firstName, lastName, birthdate, email, password)
+    VALUES ('Sean', 'Miller', '1995-04-01', 'millersean757@gmail.com', '1234');
 
-END $$
-DELIMITER ;
+    INSERT INTO UserBooks(userID, bookID, completedAt, status)
+    SELECT u.userID, b.bookID, NULL, 'reading'
+        FROM Users u
+        JOIN Books b
+        WHERE u.firstName='Sean' AND b.title='Wise Man''s Fear';
+
+    INSERT INTO UserBooks(userID, bookID, completedAt, status)
+    SELECT u.userID, b.bookID, CURDATE(), 'read'
+        FROM Users u
+        JOIN Books b
+        WHERE u.firstName='Sean' AND b.title='Stoner';
+
+    INSERT INTO UserBooks(userID, bookID, completedAt, status)
+    SELECT u.userID, b.bookID, '2020-01-01', 'read'
+        FROM Users u
+        JOIN Books b
+        WHERE u.firstName='Sean' AND b.title='Intermezzo';
+    
+    INSERT INTO UserBooks(userID, bookID, completedAt, status)
+    SELECT u.userID, b.bookID, NULL, 'wishlist'
+        FROM Users u
+        JOIN Books b
+        WHERE u.firstName='Sean' AND b.title='Blood Meridian';
+
+SET FOREIGN_KEY_CHECKS=1;

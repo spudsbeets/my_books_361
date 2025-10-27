@@ -1,6 +1,6 @@
 import express from "express";
 import { authenticate } from "../middleware/authMiddleware.js";
-import { getBooksByStatus, addBook, addReview, getRecommendation, searchBooks, updateBook, updateReview, updateProfile, deleteBook } from "../controllers/bookController.js";
+import { getBooksByStatus, getUserStats, addBook, addReview, getRecommendation, searchBooks, updateBook, updateReview, updateProfile, deleteBook } from "../controllers/bookController.js";
 import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -25,6 +25,7 @@ const upload = multer({ storage });
 router.get("/books", authenticate, getBooksByStatus); // Status = Query. i.e. /books?status=wishlist
 router.get("/books/recommendation", authenticate, getRecommendation); // Get a recommendation
 router.get("/books/search", authenticate, searchBooks); // Search by Author, Title, ISBN
+router.get("/stats", authenticate, getUserStats); // Get user stats for homepage
 
 // POST
 router.post("/books", authenticate, upload.single("coverImg"), addBook); // Add a book to the database

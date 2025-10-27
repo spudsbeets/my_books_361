@@ -1,6 +1,46 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { useState } from "react"
 
 export function CreateAccountPage() {
+    const [email, setEmail] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [birthdate, setBirthdate] = useState<string>("");
+    const [firstName, setFirstName] = useState<string>("");
+    const [lastName, setLastName] = useState<string>("");
+    const [error, setError] = useState("");
+
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError("");
+
+        if (password !== confirmPassword) {
+            setError("Passwords do not match.");
+            return;
+        }
+
+        try {
+            const res = await fetch("http://localhost:4020/api/auth/register/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password, firstName, lastName, birthdate })
+            })
+
+            if (!res.ok) {
+                const data = await res.json();
+                setError(data.message || "Registration failed.");
+                return;
+            }
+
+            navigate("/home");
+        } catch(err) {
+            console.error(err);
+            setError("Unable to connect to server.");
+        }
+    }
+
     return(
         <div className="open-div">
             <div className="open-div-left">
@@ -8,20 +48,21 @@ export function CreateAccountPage() {
             </div>
             <div className="open-div-center">
                 <h2 id="create-header">Create your account and get started tracking your reading!</h2>
-                <form id="create-form">
+                <form id="create-form" onSubmit={handleSubmit}>
                     <label htmlFor="first-name">First Name: </label>
-                    <input id="first-name" type="text" required />
+                    <input id="first-name" type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
                     <label htmlFor="last-name">Last Name: </label>
-                    <input id="last-name" type="text" required />
+                    <input id="last-name" type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
                     <label htmlFor="birthdate">Birthdate: </label>
-                    <input id="birthdate" type="date" required />
+                    <input id="birthdate" type="date" value={birthdate} onChange={(e) => setBirthdate(e.target.value)} required />
                     <label htmlFor="email">Email: </label>
-                    <input id="email" type="email" required />
+                    <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                     <label htmlFor="password">Password: </label>
-                    <input id="password" type="password" required />
+                    <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                     <label htmlFor="confirm-password">Confirm Password: </label>
-                    <input id="confirm-password" type="password" required />
-                    <Link to="/home" id="create-link"><button className="button-class">Create Account</button></Link>
+                    <input id="confirm-password" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+                    {error && <p style={{ color: "red" }}>{error}</p>}
+                    <button className="button-class" type="submit">Create Account</button>
                 </form>
             </div>
             <div className="open-div-right">

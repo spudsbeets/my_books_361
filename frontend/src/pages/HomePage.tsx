@@ -1,6 +1,30 @@
 import { NavBar } from "../components/NavBar"
+import { useEffect, useState } from "react"
 
 export function HomePage() {
+    const [allTimeRead, setAllTimeRead] = useState<number>(0);
+    const [thisYearRead, setThisYearRead] = useState<number>(0);
+    const [currentReads, setCurrentReads] = useState<string[]>([]);
+    const [recentReads, setRecentReads] = useState<string[]>([]);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        fetch("http://localhost:4020/api/books/stats", {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+        .then(res => res.json())
+        .then(data => {
+            setAllTimeRead(data.allTimeRead);
+            setThisYearRead(data.thisYearRead);
+            setCurrentReads(data.currentReads);
+            setRecentReads(data.recentReads);
+        })
+        .catch(err => console.error("Error fetching stats:", err));
+    }, []);
+
     return(
         <>
         <NavBar />
@@ -9,11 +33,11 @@ export function HomePage() {
                 <h1 id="home-header">Hey Sean, welcome to your virtual library</h1>
                 <div id="read-counts-div">
                     <div id="read-all-time-div">
-                        <h1>5</h1>
+                        <h1>{allTimeRead}</h1>
                         <p>Books read all time</p>
                     </div>
                     <div id="read-this-year-div">
-                        <h1>5</h1>
+                        <h1>{thisYearRead}</h1>
                         <p>Books read this year</p>
                     </div>
                 </div>
@@ -23,8 +47,13 @@ export function HomePage() {
                             <p>Currently Reading</p>
                         </div>
                         <div className="shelf-books">
-                            <div className="book-spine-1"><p className="vertical-text">Wise Man's Fears</p></div>
-                            <div className="book-spine-2"><p className="vertical-text">Meditations</p></div>
+                            {currentReads.map((title, idx) => {
+                                return(
+                                    <div key={idx} className={`book-spine-${(idx % 2) + 1}`}>
+                                        <p className="vertical-text">{title}</p>
+                                    </div>
+                                )
+                            })}
                         </div>
                     </div>
                     <div id="recently-read">
@@ -32,11 +61,13 @@ export function HomePage() {
                             <p>Recently Read</p>
                         </div>
                         <div className="shelf-books">
-                            <div className="book-spine-2"><p className="vertical-text">One Hundred Years of Solitude</p></div>
-                            <div className="book-spine-1"><p className="vertical-text">Dungeon Crawler Carl</p></div>
-                            <div className="book-spine-2"><p className="vertical-text">Stoner</p></div>
-                            <div className="book-spine-1"><p className="vertical-text">Slaughterhouse Five</p></div>
-                            <div className="book-spine-2"><p className="vertical-text">Intermezzo</p></div>
+                            {recentReads.map((title, idx) => {
+                                return(
+                                    <div key={idx} className={`book-spine-${(idx % 2) + 1}`}>
+                                        <p className="vertical-text">{title}</p>
+                                    </div>
+                                )
+                            })}
                         </div>
                     </div>
                 </div>

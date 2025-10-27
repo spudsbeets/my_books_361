@@ -70,7 +70,7 @@ export function AddBookPage() {
                 </div>
             </div>
             <div id="add-book-div-right">
-                <p id="add-book-about">Add a book to the database here! First, check if it is already present using the search bar at the top. Make sure all required fields are filled out and correct, but if there is anything off, books can be edited from their 'more information' link. Thank you!</p>
+                <p id="add-book-about">Add a book to the database here or add one to your books page! First, check if it is already present using the search bar at the top. Make sure all required fields are filled out and correct, but if there is anything off, books can be edited from their 'more information' link. Thank you!</p>
             </div>
         </div>
 

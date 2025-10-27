@@ -25,6 +25,51 @@ export async function getBooksByStatus(req, res) {
     }
 }
 
+export async function getUserStats(req, res) {
+    const userID = req.user.id;
+
+    try {
+        const [allTimeRows] = await pool.query(
+            "SELECT COUNT(*) AS allTimeRead FROM UserBooks WHERE userID = ? AND status = 'read'",
+            [userID]
+        );
+
+        const [thisYearRows] = await pool.query(
+            "SELECT COUNT(*) AS thisYearRead FROM UserBooks WHERE userID = ? AND status = 'read' AND YEAR(completedAt)=YEAR(CURDATE())",
+            [userID]
+        );
+
+        const [currentRows] = await pool.query(
+            `SELECT b.title
+            FROM UserBooks ub
+            JOIN Books b ON ub.bookID = b.bookID
+            WHERE ub.userID=? AND ub.status='reading'
+            LIMIT 2`,
+            [userID]
+        );
+
+        const [recentRows] = await pool.query(
+            `SELECT b.title
+            FROM UserBooks ub
+            JOIN Books b ON ub.bookID = b.bookID
+            WHERE ub.userID=? AND ub.status='read'
+            LIMIT 5`,
+            [userID]
+        );
+
+        res.json({ 
+            allTimeRead: allTimeRows[0].allTimeRead,
+            thisYearRead: thisYearRows[0].thisYearRead,
+            currentReads: currentRows.map(r => r.title),
+            recentReads: recentRows.map(r => r.title) 
+        });
+
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({ message: "Error fetching user stats" });
+    }
+}
+
 export async function getRecommendation(req, res) {
     try {
         const { genre1, genre2 } = req.query;
