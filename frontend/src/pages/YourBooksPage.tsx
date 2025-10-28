@@ -1,7 +1,63 @@
 import { NavBar } from "../components/NavBar"
 import { BasicBook } from "../components/BasicBook"
+import { useEffect, useState } from "react"
+
+interface Book {
+    bookID: number,
+    title: string,
+    author: string,
+    coverSrc: string,
+    rating: string
+}
 
 export function YourBooksPage() {
+    const [reading, setReading] = useState<Book[]>([]);
+    const [read, setRead] = useState<Book[]>([]);
+    const [wishlist, setWishlist] = useState<Book[]>([]);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        const fetchBooks = async(status: string) => {
+            const res = await fetch(`http://localhost:4020/api/books/books?status=${status}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const data = await res.json();
+
+            return data.books.map((b: any) => ({
+                bookID: b.bookID,
+                title: b.title,
+                author: `${b.authorFirst} ${b.authorLast}`,
+                coverSrc: `http://localhost:4020/uploads/${b.coverSrc}`,
+                rating: b.rating ? '⭐'.repeat(b.rating) : "No Review"
+            }));
+        };
+
+        const loadBooks = async() => {
+            try {
+                setReading(await fetchBooks("reading"));
+                setRead(await fetchBooks("read"));
+                setWishlist(await fetchBooks("wishlist"));
+            } catch(err) {
+                console.error("Error fetching books: ", err);
+            }
+        };
+
+        loadBooks();
+
+    },[]);
+
+    const renderBooks = (books: Book[]) => books.map(b => 
+        <BasicBook 
+            key={b.bookID} 
+            bookID={b.bookID}
+            title={b.title}
+            author={b.author}
+            coverSrc={b.coverSrc}
+            rating={b.rating} 
+        />
+    );
+
     return(
         <>
         <NavBar />
@@ -10,26 +66,19 @@ export function YourBooksPage() {
                 <div className="your-books-sub-div">
                     <p className="your-books-header">Currently Reading</p>
                     <div className="your-books-container">
-                        <BasicBook title="Wise Man's Fear" author="Patrick Rothfuss" coverSrc="../src/images/wise-mans-fear.png" stars="No Review" />
-                        <BasicBook title="Meditations" author="Marcus Aurelius" coverSrc="../src/images/meditations.png" stars="No Review" />
+                        {renderBooks(reading)}
                     </div>
                 </div>
                 <div className="your-books-sub-div">
                     <p className="your-books-header">Past Reads</p>
                     <div className="your-books-container">
-                        <BasicBook title="One Hundred Years of Solitude" author="Gabriel Garcia Marquez" coverSrc="../src/images/100-years-of-solitude.png" stars="⭐⭐⭐⭐⭐" />
-                        <BasicBook title="Dungeon Crawler Carl" author="Matt Dinniman" coverSrc="../src/images/dungeon-crawler-carl.png" stars="⭐⭐⭐" />
-                        <BasicBook title="Stoner" author="John Williams" coverSrc="../src/images/stoner.png" stars="⭐⭐⭐⭐⭐" />
-                        <BasicBook title="Slaughterhouse Five" author="Kurt Vonnegut" coverSrc="../src/images/slaughterhouse-five.png" stars="⭐⭐⭐⭐" />
-                        <BasicBook title="Intermezzo" author="Sally Rooney" coverSrc="../src/images/intermezzo.png" stars="⭐⭐⭐⭐" />
+                        {renderBooks(read)}
                     </div>
                 </div>
                 <div className="your-books-sub-div">
                     <p className="your-books-header">Wishlist</p>
                     <div className="your-books-container">
-                        <BasicBook title="Gravity's Rainbow" author="Thomas Pynchon" coverSrc="../src/images/gravitys-rainbow.png" stars="No Review" />
-                        <BasicBook title="Blood Meridian" author="Cormac McCarthy" coverSrc="../src/images/blood-meridian.png" stars="No Review" />
-                        <BasicBook title="Ulysses" author="James Joyce" coverSrc="../src/images/ulysses.png" stars="No Review" />
+                        {renderBooks(wishlist)}
                     </div>
                 </div>
             </div>

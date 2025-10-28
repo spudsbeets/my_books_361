@@ -5,6 +5,7 @@ import authRoutes from "./src/routes/authRoutes.js";
 import bookRoutes from "./src/routes/bookRoutes.js";
 import pool from "./src/db.js";
 import fs from 'fs';
+import path from 'path';
 
 dotenv.config();
 
@@ -13,7 +14,7 @@ const app = express();
 // Allows cross-origin resource sharing
 app.use(cors({
   origin: 'http://localhost:5173',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
@@ -22,7 +23,7 @@ app.use(express.json());
 app.get('/', (req, res) => res.send('Server running!'));
 app.use('/api/auth', authRoutes);
 app.use('/api/books', bookRoutes);
-app.use('/uploads', express.static('src/uploads'));
+app.use('/uploads', express.static(path.join(process.cwd(), 'src/uploads')));
 
 const PORT = process.env.PORT || 4020
 

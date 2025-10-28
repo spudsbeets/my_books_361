@@ -27,7 +27,7 @@ function AppContent() {
       <Route path="/addBook" element={<AddBookPage />} />
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/editBook" element={<EditBookPage />} />
-      <Route path="/bookInfo" element={<BookInfoPage />} />
+      <Route path="/bookInfo/:bookID" element={<BookInfoPage />} />
       <Route path="/recommendation" element={<RecommendationPage />} />
       <Route path="/yourBooks" element={<YourBooksPage />} />
       <Route path="/createAccount" element={<CreateAccountPage />} />

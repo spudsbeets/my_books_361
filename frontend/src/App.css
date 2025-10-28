@@ -264,6 +264,11 @@ h2 {
   height: 200px;
 }
 
+.book-cover-info {
+  width: 280px;
+  height: 400px;
+}
+
 .your-books-container {
   display: flex;
   flex-direction: row;

@@ -11,16 +11,55 @@ export async function getBooksByStatus(req, res) {
         }
 
         const query = `
-            SELECT *
-            FROM UserBooks
-            WHERE UserID = ?
-                AND status = ?
+            SELECT b.bookID, b.title, b.authorFirst, b.authorLast, b.coverImg AS coverSrc, ub.status, ub.completedAt, ur.rating
+            FROM UserBooks ub
+            JOIN Books b ON ub.bookID = b.bookID
+            LEFT JOIN UserReviews ur ON ub.bookID = ur.bookID AND ub.userID = ur.userID
+            WHERE ub.UserID = ? AND ub.status = ?
         `;
 
         const result = await pool.query(query, [userID, status]);
-        res.status(200).json({ books: result.rows });
+
+        res.status(200).json({ books: result[0] });
     } catch(err) {
         console.log(err);
+        res.status(500).json({ message: "Server error" });
+    }
+}
+
+export async function getSingleBook(req, res) {
+    try {
+        const { bookID } = req.params;
+
+        const [rows] = await pool.query(
+            `SELECT b.bookID, b.title, b.authorFirst, b.authorLast, b.coverImg as coverSrc, b.publisher, DATE_FORMAT(b.publicationDate, '%Y-%m-%d') AS publicationDate, b.pageCount, b.isbn, b.genre, b.synopsis
+            FROM Books b WHERE bookID = ?`,
+            [bookID]
+        );
+        if (rows.length === 0) return res.status(404).json({ message: "Book not found"} );
+        const book = rows[0];
+        res.status(200).json(book); 
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+}
+
+export async function getUserBookStatus(req, res) {
+    try {
+        const userID = req.user.id;
+        const { bookID } = req.params;
+
+        const [rows] = await pool.query(
+            "SELECT status FROM UserBooks WHERE userID = ? AND bookID = ?",
+            [userID, bookID]
+        )
+
+        if (rows.length === 0) return res.status(200).json({ status: "not-read" });
+
+        res.status(200).json({ status: rows[0].status });
+    } catch(err) {
+        console.error(err);
         res.status(500).json({ message: "Server error" });
     }
 }
@@ -104,6 +143,28 @@ export async function getRecommendation(req, res) {
     }
 }
 
+export async function getUserReview(req, res) {
+    try {
+        const userID = req.user.id;
+        const { bookID } = req.params;
+
+        const [rows] = await pool.query(
+            "SELECT * FROM UserReviews WHERE bookID = ? AND userID = ?",
+            [bookID, userID]
+        );
+
+        if (rows.length === 0) {
+            // No review found for this user/book
+            return res.status(200).json({ rating: 0, reviewText: "" });
+        }
+
+        return res.status(200).json(rows[0]);
+
+    } catch(err) {
+        res.status(500).json({ message: "Server error" });
+    }
+}
+
 export async function searchBooks(req, res) {
     try {
         const { qu } = req.query; // i.e. ?qu=search term
@@ -114,26 +175,28 @@ export async function searchBooks(req, res) {
 
         // Uses case insensitive search (Like)
         const searchQuery = `
-            SELECT * 
+            SELECT bookID, title, authorFirst, authorLast, coverImg AS coverSrc 
             FROM Books
             WHERE title LIKE ?
                 OR authorLast LIKE ?
-                OR isbn = ?
+                OR isbn LIKE ?
         `;
 
-        const result = await pool.query(searchQuery, [`%${q}%`, `%${q}%`, q]); // % for partial match
-        res.status(200).json({ books: result.rows });
+        const wildcardQuery = `%${qu}%`;
+        const [rows] = await pool.query(searchQuery, [wildcardQuery, wildcardQuery, wildcardQuery]);
+        res.status(200).json({ books: rows });
     } catch(err) {
         res.status(500).json({ message: "Server error" })
     }
 }
 
 export async function addBook(req, res) {
-    const { title, authorFirst, authorLast, publisher, publicationDate, pageCount, isbn } = req.body;
+    const { title, authorFirst, authorLast, publisher, publicationDate, pageCount, isbn, genre, synopsis } = req.body;
     const coverImg = req.file ? req.file.filename: null;
+    console.log(coverImg)
 
     try {
-        await pool.query("INSERT INTO Books (title, authorFirst, authorLast, publisher, publicationDate, pageCount, isbn, coverImg) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [title, authorFirst, authorLast, publisher, publicationDate, pageCount, isbn, coverImg])
+        await pool.query("INSERT INTO Books (title, authorFirst, authorLast, publisher, publicationDate, pageCount, isbn, genre, synopsis, coverImg) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [title, authorFirst, authorLast, publisher, publicationDate, pageCount, isbn, genre, synopsis, coverImg])
         res.status(201).json({ message: "Book added successfully!" })
     } catch(err) {
         res.status(500).json({ error: err.message });
@@ -213,7 +276,41 @@ export async function updateBook(req, res) {
     }
 }
 
-export async function updateReview(req, res) {
+export async function updateUserBookStatus(req, res) {
+    try {
+        const { bookID } = req.params;
+        const { status } = req.body;
+        const userID = req.user.id;
+
+        if (!status) return res.status(400).json({ message: "Status is required" });
+
+        const completedAt = status === "read" ? new Date() : null;
+
+        const [rows] = await pool.query(
+            "SELECT * FROM UserBooks WHERE userID = ? AND bookID = ?",
+            [userID, bookID]
+        );
+
+        if (rows.length === 0) {
+            await pool.query(
+                "INSERT INTO UserBooks (userID, bookID, completedAt, status) VALUES (?, ?, ?, ?)",
+                [userID, bookID, completedAt, status]
+            );
+        } else {
+            await pool.query(
+                "UPDATE UserBooks SET status = ?, completedAt = ? WHERE userID = ? AND bookID = ?",
+                [status, completedAt, userID, bookID]
+            );
+        }
+
+        res.status(200).json({ message: "Book status updated successfully" });
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });        
+    }
+}
+
+export async function updateUserReview(req, res) {
     try {
         const userID = req.user.id;
         const { bookID } = req.params;
@@ -223,32 +320,29 @@ export async function updateReview(req, res) {
             return res.status(400).json({ message: "Nothing to update." });
         }
 
-        const fields = [];
-        const values = [];
-
-        if (rating !== undefined) {
-            fields.push("rating = ?");
-            values.push(rating);
-        }
-        if (reviewText !== undefined) {
-            fields.push("reviewText = ?");
-            values.push(reviewText);
-        }
-
-        const query = `
+        const [updateResults] = await pool.query(
+            `
             UPDATE UserReviews
-            SET ${fields.join(", ")}
+            SET rating = COALESCE(?, rating),
+                reviewText = COALESCE(?, reviewText)
             WHERE userID = ? AND bookID = ?
-        `;
-        values.push(userID, bookID);
+            `,
+            [rating, reviewText, userID, bookID]
+        );
 
-        const [result] = await pool.execute(query, values);
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: "Review not found." });
-        }
+        if (updateResults.affectedRows === 0) {
+            await pool.query(
+                `
+                INSERT INTO UserReviews (userID, bookID, rating, reviewText)
+                VALUES (?, ?, ?, ?)
+                `,
+                [userID, bookID, rating, reviewText]
+            );
+            return res.status(201).json({ message: "Review created successfully." });
+        } 
 
         res.status(200).json({ message: "Review updated successfully." });
+
     } catch(err) {
         res.status(500).json({ message: "Server error." })
     }

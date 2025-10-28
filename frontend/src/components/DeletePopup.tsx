@@ -1,7 +1,10 @@
-import { Link } from "react-router-dom"
 import type PopupProps from "../interfaces/PopupProps";
 
-export function DeletePopup({ isOpen, onClose }: PopupProps) {
+interface DeletePopupProps extends PopupProps {
+    onConfirm: () => void
+}
+
+export function DeletePopup({ isOpen, onClose, onConfirm }: DeletePopupProps) {
     if (!isOpen) return null;
 
     return(
@@ -10,7 +13,7 @@ export function DeletePopup({ isOpen, onClose }: PopupProps) {
                 <p id="delete-popup-message">Are you sure you want to delete this book? This action cannot be reversed.</p>
                 <div id="delete-popup-options-div">
                     <button className="button-class" onClick={onClose}>Cancel</button>
-                    <Link to="/home" id="delete-confirm-link"><button className="button-class">Confirm</button></Link>
+                    <button className="button-class" onClick={onConfirm}>Confirm</button>
                 </div>
             </div>
         </div>

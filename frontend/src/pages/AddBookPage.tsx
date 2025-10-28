@@ -1,32 +1,111 @@
 import { NavBar } from "../components/NavBar"
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { AddSuccessPopup } from "../components/AddSuccessPopup"
 import { AddFailurePopup } from "../components/AddFailurePopup"
+import { Link } from "react-router-dom"
+import { BasicBook } from "../components/BasicBook"
+
+interface BookSearchResult {
+    bookID: number,
+    title: string,
+    authorFirst: string,
+    authorLast: string,
+    coverSrc: string,
+    rating?: string
+}
 
 export function AddBookPage() {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchResults, setSearchResults] = useState<BookSearchResult[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [searchError, setSearchError] = useState('');
+    const [searchBy, setSearchBy] = useState('title');
     const [isSuccessPopup, setSuccessPopup] = useState<boolean>(false)
     const [isFailurePopup, setFailurePopup] = useState<boolean>(false)
 
-    async function validateInput(event: React.FormEvent) {
-        event.preventDefault();
-        
-        const form = event.target as HTMLFormElement
-        const formData = new FormData(form);
+    const debounce = (func: Function, delay: number) => {
+        let timeoutId: number;
+        return (...args: any[]) => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                func.apply(null, args);
+            }, delay);
+        };
+    };
+
+    const performSearch = useCallback(debounce(async (query: string) => {
+        if (query.length < 3) {
+            setSearchResults([]);
+            setIsLoading(false);
+            return;
+        }
+
+        setIsLoading(true);
+        setSearchError('');
+        const token = localStorage.getItem("token");
 
         try {
-            const response = await fetch("/api/books", {
+            const res = await fetch(`http://localhost:4020/api/books/search?qu=${encodeURIComponent(query)}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                setSearchResults(data.books || []);
+            } else {
+                setSearchError(data.message || 'Failed to fetch search results.');
+                setSearchResults([]);
+            }
+        } catch (err) {
+            console.error("Search error: ", err);
+            setSearchError('Network error during search.');
+            setSearchResults([]);
+        } finally {
+            setIsLoading(false);
+        }
+    }, 500), []);
+
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const query = event.target.value;
+        setSearchTerm(query);
+        performSearch(query);
+    };
+
+    async function validateInput(event: React.FormEvent) {
+        event.preventDefault();
+
+        const form = event.target as HTMLFormElement;
+        const formData = new FormData(form);
+        const isbn = formData.get("isbn")?.toString();
+
+        if (!isbn || isbn.length !== 13 || !isbn.startsWith("978")) {
+            setFailurePopup(true);
+            return;
+        }
+
+        const token = localStorage.getItem("token");
+
+        try {
+            const res = await fetch("http://localhost:4020/api/books/books", {
             method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
             body: formData,
             });
 
-            const data = await response.json();
-            if (response.ok) {
-                setSuccessPopup(true)
+            const data = await res.json();
+
+            if (res.ok) {
+                setSuccessPopup(true);
+                form.reset();
             } else {
-                setFailurePopup(true)
+                console.error("Add book failed:", data);
+                setFailurePopup(true);
             }
-        } catch (err) {
-            console.error(err);
+        } catch(err) {
+            console.error("Add book error:", err);
+            setFailurePopup(true);
         }
     }
 
@@ -37,12 +116,39 @@ export function AddBookPage() {
             <div id="add-book-div-left">
                 <div id="add-book-search-div">
                     <label htmlFor="book-search">Search Books: </label>
-                    <input id="book-search" type="search" />
-                    <select id="search-by-dropdown" name="search-by">
+                    <input id="book-search" type="search" value={searchTerm} onChange={handleSearchChange} />
+                    <select id="search-by-dropdown" name="search-by" value={searchBy} onChange={(e) => setSearchBy(e.target.value)}>
                         <option value="title" selected>Title</option>
                         <option value="author">Author (last name)</option>
                         <option value="isbn">ISBN</option>
                     </select>
+                </div>
+                <div className="mt-4 max-h-80 overflow-y-auto border border-gray-200 rounded-lg">
+                        {isLoading && searchTerm.length >= 3 && (
+                            <div className="p-3 text-center text-blue-500">Searching...</div>
+                        )}
+                        {searchError && (
+                            <div className="p-3 text-center text-red-500">{searchError}</div>
+                        )}
+                        {(!isLoading && searchResults.length === 0 && searchTerm.length >= 3 && !searchError) && (
+                            <div className="p-3 text-center text-gray-500">No results found in your database. Try adding the book below.</div>
+                        )}
+                        {searchResults.map(book => {
+                            const author = `${book.authorFirst} ${book.authorLast}`;
+                            const fullCoverSrc = `http://localhost:4020/uploads/${book.coverSrc}`
+                            const rating = book.rating || "N/A"
+
+                            return(
+                                <BasicBook
+                                    key={book.bookID}
+                                    bookID={book.bookID}
+                                    title={book.title}
+                                    author={author}
+                                    coverSrc={fullCoverSrc}
+                                    rating={rating}
+                                />
+                            )
+                        })}
                 </div>
                 <div id="add-book-form-div">
                     <h3 id="add-book-header">Add Book</h3>
