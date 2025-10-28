@@ -27,6 +27,32 @@ export async function getBooksByStatus(req, res) {
     }
 }
 
+export async function getUser(req, res) {
+    try {
+        const userID = req.user?.id;
+        if (!userID) {
+            return res.status(401).json({ message: "Unauthorized: missing user ID" });
+        }
+
+        const query = `
+            SELECT userID, firstName, lastName, birthdate, email
+            FROM Users
+            WHERE userID = ?            
+        `;
+
+        const [rows] = await pool.execute(query, [userID]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json(rows[0]);
+    } catch(err) {
+        console.error("getUser error:", err);
+        res.status(500).json({ message: "Server error" })        
+    }
+}
+
 export async function getSingleBook(req, res) {
     try {
         const { bookID } = req.params;
@@ -113,7 +139,7 @@ export async function getRecommendation(req, res) {
     try {
         const { genre1, genre2 } = req.query;
 
-        let query = `SELECT * FROM BOOKS`
+        let query = `SELECT * FROM Books`
         const params = [];
 
         if (genre1 || genre2) {
@@ -131,12 +157,13 @@ export async function getRecommendation(req, res) {
 
         query += ` ORDER BY RAND() LIMIT 1`;
 
-        const [rows] = await pool.execute(query, params);
+        let [rows] = await pool.execute(query, params);
         if (rows.length == 0) {
             const [randomRows] = await pool.execute(`SELECT * FROM Books ORDER BY RAND() LIMIT 1`);
             rows = randomRows;
         }
 
+        console.log("Returned book:", rows[0]);
         res.status(200).json({ books: rows[0] })
     } catch(err) {
         res.status(500).json({ message: "Server error" });
@@ -193,7 +220,6 @@ export async function searchBooks(req, res) {
 export async function addBook(req, res) {
     const { title, authorFirst, authorLast, publisher, publicationDate, pageCount, isbn, genre, synopsis } = req.body;
     const coverImg = req.file ? req.file.filename: null;
-    console.log(coverImg)
 
     try {
         await pool.query("INSERT INTO Books (title, authorFirst, authorLast, publisher, publicationDate, pageCount, isbn, genre, synopsis, coverImg) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [title, authorFirst, authorLast, publisher, publicationDate, pageCount, isbn, genre, synopsis, coverImg])
@@ -374,6 +400,7 @@ export async function updateProfile(req, res) {
         values.push(userID);
 
         const [result] = await pool.execute(query, values);
+
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: "User not found." });

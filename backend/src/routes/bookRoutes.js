@@ -1,6 +1,6 @@
 import express from "express";
 import { authenticate } from "../middleware/authMiddleware.js";
-import { getBooksByStatus, getUserStats, getSingleBook, getUserBookStatus, getUserReview, addBook, addReview, getRecommendation, searchBooks, updateBook, updateUserBookStatus, updateUserReview, updateProfile, deleteBook } from "../controllers/bookController.js";
+import { getBooksByStatus, getUser, getUserStats, getSingleBook, getUserBookStatus, getUserReview, addBook, addReview, getRecommendation, searchBooks, updateBook, updateUserBookStatus, updateUserReview, updateProfile, deleteBook } from "../controllers/bookController.js";
 import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -28,10 +28,11 @@ const upload = multer({ storage });
 router.get("/books", authenticate, getBooksByStatus); // Status = Query. i.e. /books?status=wishlist
 router.get("/books/:bookID", authenticate, getSingleBook); // Get 1 book from Books
 router.get("/userBooks/:bookID", authenticate, getUserBookStatus); // Get 1 book status from UserBooks
-router.get("/books/recommendation", authenticate, getRecommendation); // Get a recommendation
+router.get("/recommendation", authenticate, getRecommendation); // Get a recommendation
 router.get("/search", authenticate, searchBooks); // Search by Author, Title, ISBN
 router.get("/stats", authenticate, getUserStats); // Get user stats for homepage
 router.get("/userReviews/:bookID", authenticate, getUserReview); // Get a user review
+router.get("/users", authenticate, getUser); // Get a user
 
 // POST
 router.post("/books", authenticate, upload.single("coverImg"), addBook); // Add a book to the database

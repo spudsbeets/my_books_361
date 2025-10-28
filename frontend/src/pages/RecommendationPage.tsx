@@ -5,6 +5,15 @@ import { useState } from "react"
 export function RecommendationPage() {
     const [mode, setMode] = useState<"random" | "curated">("random")
     const [hasRecommendation, setHasRecommendation] = useState<boolean>(false);
+    const [genre1, setGenre1] = useState("sci-fi");
+    const [genre2, setGenre2] = useState("fantasy");
+    const [recommendedBook, setRecommendedBook] = useState<{
+        bookID: number;
+        title: string;
+        author: string;
+        coverSrc: string;
+        rating: string;
+        } | null>(null);
 
     function handleRandomMode() {
         setMode("random")
@@ -16,10 +25,43 @@ export function RecommendationPage() {
         setHasRecommendation(false)
     }
 
-    function handleGetRecommendation(event: React.FormEvent) {
+    async function handleGetRecommendation(event: React.FormEvent) {
         event.preventDefault();
-        setHasRecommendation(true);
-    }
+
+        const token = localStorage.getItem("token");
+        const url =
+            mode === "random"
+            ? "http://localhost:4020/api/books/recommendation"
+            : `http://localhost:4020/api/books/recommendation?genre1=${genre1}&genre2=${genre2}`;
+
+        try {
+            const res = await fetch(url, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+            });
+
+            if (!res.ok) {
+                console.error("Failed to fetch recommendation");
+                return;
+            }
+
+            const data = await res.json();
+            const book = data.books;
+
+            setRecommendedBook({
+                bookID: book.bookID,
+                title: book.title,
+                author: `${book.authorFirst} ${book.authorLast}`,
+                coverSrc: `http://localhost:4020/uploads/${book.coverImg}`,
+                rating: book.rating || "No Review"
+            });
+
+            setHasRecommendation(true);
+        } catch (err) {
+            console.error("Error fetching recommendation:", err);
+        }
+}
 
     return(
         <>
@@ -31,7 +73,7 @@ export function RecommendationPage() {
                     <button className="button-class" onClick={handleRandomMode}>Random Recommendation Mode</button>
                     <button className="button-class" onClick={handleCuratedMode}>Curated Recommendation Mode</button>
                 </div>
-                <button className="button-class" onClick={() => setHasRecommendation(true)}>Get Recommendation</button>
+                <button className="button-class" onClick={handleGetRecommendation}>Get Recommendation</button>
                 <div id="curated-recommendation-div">
                     <form id="curated-recommendation-form" onSubmit={handleGetRecommendation} style={{
                         visibility: mode === "curated" ? "visible" : "hidden",
@@ -41,7 +83,7 @@ export function RecommendationPage() {
                         overflow: "hidden",
                     }}>
                         <label htmlFor="genre-dropdown-1">Genre 1: </label>
-                        <select id="genre-dropdown-1" name="genre1">
+                        <select id="genre-dropdown-1" name="genre1" value={genre1} onChange={(e) => setGenre1(e.target.value)}>
                             <option value="fantasy">Fantasy</option>
                             <option value="sci-fi" selected>Sci Fi</option>
                             <option value="classics">Classics</option>
@@ -49,7 +91,7 @@ export function RecommendationPage() {
                             <option value="manga">Manga</option>
                         </select>
                         <label htmlFor="genre-dropdown-2">Genre 2: </label>
-                        <select id="genre-dropdown-2" name="genre2">
+                        <select id="genre-dropdown-2" name="genre2" value={genre2} onChange={(e) => setGenre2(e.target.value)}>
                             <option value="fantasy" selected>Fantasy</option>
                             <option value="sci-fi">Sci Fi</option>
                             <option value="classics">Classics</option>
@@ -58,7 +100,7 @@ export function RecommendationPage() {
                         </select>
                         <button className="button-class" type="submit">Get Curated Recommendation</button>
                     </form>
-                    <div id="given-recommendation-div" style={{
+                    {hasRecommendation && recommendedBook && (<div id="given-recommendation-div" style={{
                         visibility: hasRecommendation ? "visible" : "hidden",
                         opacity: hasRecommendation ? 1 : 0,
                         transition: "opacity 0.3s ease",
@@ -66,8 +108,8 @@ export function RecommendationPage() {
                         overflow: "hidden",
                     }}>
                         <h3>Your Recommendation!</h3>
-                        <BasicBook title="Moby Dick" author="Herman Melville" coverSrc="../src/images/moby-dick.png" stars="No Review" />
-                    </div>
+                        <BasicBook bookID={recommendedBook.bookID} title={recommendedBook.title} author={recommendedBook.author} coverSrc={recommendedBook.coverSrc} rating={recommendedBook.rating} />
+                    </div>)}
                 </div>
             </div>
             <div id="recommendation-div-right">
