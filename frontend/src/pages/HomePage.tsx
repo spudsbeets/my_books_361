@@ -1,26 +1,39 @@
 import { NavBar } from "../components/NavBar"
 import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom";
 
 export function HomePage() {
     const [allTimeRead, setAllTimeRead] = useState<number>(0);
     const [thisYearRead, setThisYearRead] = useState<number>(0);
     const [currentReads, setCurrentReads] = useState<string[]>([]);
     const [recentReads, setRecentReads] = useState<string[]>([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const token = localStorage.getItem("token");
+
+        if (!token) {
+            console.warn("No token found. Redirecting to login.");
+            navigate("/");
+            return;
+            }
 
         fetch("http://localhost:4020/api/books/stats", {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
         })
-        .then(res => res.json())
+        .then(res => {
+            if (res.status === 403) {
+                throw new Error("Unauthorized access. Token may be invalid.");
+            }
+            return res.json();
+        })
         .then(data => {
-            setAllTimeRead(data.allTimeRead);
-            setThisYearRead(data.thisYearRead);
-            setCurrentReads(data.currentReads);
-            setRecentReads(data.recentReads);
+            setAllTimeRead(data.allTimeRead ?? 0);
+            setThisYearRead(data.thisYearRead ?? 0);
+            setCurrentReads(data.currentReads ?? []);
+            setRecentReads(data.recentReads ?? []);
         })
         .catch(err => console.error("Error fetching stats:", err));
     }, []);
@@ -47,7 +60,7 @@ export function HomePage() {
                             <p>Currently Reading</p>
                         </div>
                         <div className="shelf-books">
-                            {currentReads.map((title, idx) => {
+                            {Array.isArray(currentReads) && currentReads.map((title, idx) => {
                                 return(
                                     <div key={idx} className={`book-spine-${(idx % 2) + 1}`}>
                                         <p className="vertical-text">{title}</p>
@@ -61,7 +74,7 @@ export function HomePage() {
                             <p>Recently Read</p>
                         </div>
                         <div className="shelf-books">
-                            {recentReads.map((title, idx) => {
+                            {Array.isArray(recentReads) && recentReads.map((title, idx) => {
                                 return(
                                     <div key={idx} className={`book-spine-${(idx % 2) + 1}`}>
                                         <p className="vertical-text">{title}</p>

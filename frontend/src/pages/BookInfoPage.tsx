@@ -125,7 +125,7 @@ export function BookInfoPage() {
                 </div>
                 <div className="delete-and-edit-div">
                     <button className="button-class" onClick={() => setDeletePopup(true)}>Delete</button>
-                    <Link to="/editBook"><button className="button-class">Edit</button></Link>
+                    <Link to={`/editBook/${book.bookID}`}><button className="button-class">Edit</button></Link>
                 </div>
             </div>
             <div id="book-info-center-div">

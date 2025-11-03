@@ -2,7 +2,6 @@ import { NavBar } from "../components/NavBar"
 import { useState, useCallback } from "react"
 import { AddSuccessPopup } from "../components/AddSuccessPopup"
 import { AddFailurePopup } from "../components/AddFailurePopup"
-import { Link } from "react-router-dom"
 import { BasicBook } from "../components/BasicBook"
 
 interface BookSearchResult {
@@ -19,7 +18,6 @@ export function AddBookPage() {
     const [searchResults, setSearchResults] = useState<BookSearchResult[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [searchError, setSearchError] = useState('');
-    const [searchBy, setSearchBy] = useState('title');
     const [isSuccessPopup, setSuccessPopup] = useState<boolean>(false)
     const [isFailurePopup, setFailurePopup] = useState<boolean>(false)
 
@@ -117,11 +115,7 @@ export function AddBookPage() {
                 <div id="add-book-search-div">
                     <label htmlFor="book-search">Search Books: </label>
                     <input id="book-search" type="search" value={searchTerm} onChange={handleSearchChange} />
-                    <select id="search-by-dropdown" name="search-by" value={searchBy} onChange={(e) => setSearchBy(e.target.value)}>
-                        <option value="title" selected>Title</option>
-                        <option value="author">Author (last name)</option>
-                        <option value="isbn">ISBN</option>
-                    </select>
+                    <p>Search by author last name, title, or ISBN!</p>
                 </div>
                 <div className="mt-4 max-h-80 overflow-y-auto border border-gray-200 rounded-lg">
                         {isLoading && searchTerm.length >= 3 && (
@@ -167,6 +161,8 @@ export function AddBookPage() {
                         <input id="page-count" name="pageCount" type="number" />
                         <label htmlFor="isbn">ISBN-13: </label>
                         <input id="isbn" name="isbn" type="text" required />
+                        <label htmlFor="genre">Genre: </label>
+                        <input id="genre" name="genre" type="text" />
                         <label htmlFor="synopsis">Synopsis: </label>
                         <input id="synopsis" name="synopsis" type="text" />
                         <label htmlFor="coverImg">Cover Image:</label>

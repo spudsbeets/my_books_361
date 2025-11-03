@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 interface StarRatingProps {
   rating: number,
   onChange: (value: number) => void;

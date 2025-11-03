@@ -1,13 +1,20 @@
-import type PopupProps from "../interfaces/PopupProps";
+import { useNavigate } from "react-router-dom";
 
-export function EditSuccessPopup({ isOpen, onClose }: PopupProps) {
+interface EditSuccessProps {
+    isOpen: boolean,
+    bookID?: string
+}
+
+export function EditSuccessPopup({ isOpen, bookID }: EditSuccessProps) {
     if (!isOpen) return null;
 
+    const navigate = useNavigate();
+
     return(
-        <div className="popup-overlay" onClick={onClose}>
+        <div className="popup-overlay" onClick={() => navigate(`/bookInfo/${bookID}`)}>
             <div id="edit-success-popup" onClick={(e) => e.stopPropagation()}>
                 <p>Book edited successfully!</p>
-                <button onClick={onClose}>Close</button>
+                <button onClick={() => navigate(`/bookInfo/${bookID}`)}>Close</button>
             </div>
         </div>
     )

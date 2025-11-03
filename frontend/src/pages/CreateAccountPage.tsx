@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 
 export function CreateAccountPage() {
@@ -34,7 +34,14 @@ export function CreateAccountPage() {
                 return;
             }
 
-            navigate("/home");
+            const data = await res.json();
+
+            if (data.token) {
+                localStorage.setItem("token", data.token);
+                navigate("/home");
+            } else {
+                setError("Registration succeeded but no token received.")
+            }
         } catch(err) {
             console.error(err);
             setError("Unable to connect to server.");

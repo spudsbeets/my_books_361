@@ -1,6 +1,11 @@
 import pool from '../db.js';
 import { authenticate } from "../middleware/authMiddleware.js"
 
+
+// GET Controllers
+
+// ROUTE: router.get("/books", authenticate, getBooksByStatus);
+// PURPOSE: Get all the books categorized by a current status (i.e. Wishlist, Reading, Read) at once.
 export async function getBooksByStatus(req, res) {
     try {
         const userID = req.user.id;
@@ -27,6 +32,8 @@ export async function getBooksByStatus(req, res) {
     }
 }
 
+// ROUTE: router.get("/users", authenticate, getUser);
+// PURPOSE: Get a user from the database.
 export async function getUser(req, res) {
     try {
         const userID = req.user?.id;
@@ -53,6 +60,8 @@ export async function getUser(req, res) {
     }
 }
 
+// ROUTE: router.get("/books/:bookID", authenticate, getSingleBook);
+// PURPOSE: Get a book from the database by ID.
 export async function getSingleBook(req, res) {
     try {
         const { bookID } = req.params;
@@ -71,6 +80,8 @@ export async function getSingleBook(req, res) {
     }
 }
 
+// ROUTE: router.get("/userBooks/:bookID", authenticate, getUserBookStatus);
+// PURPOSE: Get the book status for a single book in the user's catalog by ID.
 export async function getUserBookStatus(req, res) {
     try {
         const userID = req.user.id;
@@ -90,6 +101,8 @@ export async function getUserBookStatus(req, res) {
     }
 }
 
+// ROUTE: router.get("/stats", authenticate, getUserStats);
+// PURPOSE: Get the user's reading stats, current reads, and recent reads for the homepage.
 export async function getUserStats(req, res) {
     const userID = req.user.id;
 
@@ -135,12 +148,20 @@ export async function getUserStats(req, res) {
     }
 }
 
+// ROUTE: router.get("/recommendation", authenticate, getRecommendation);
+// PURPOSE: Get a recommendation from the database, either randomly, or based off genre preference. 
 export async function getRecommendation(req, res) {
     try {
         const { genre1, genre2 } = req.query;
+        const userID = req.user.id;
 
-        let query = `SELECT * FROM Books`
-        const params = [];
+        let query = `
+            SELECT b.*
+            FROM Books b
+            LEFT JOIN UserBooks ub ON b.bookID = ub.bookID AND ub.userID = ?
+            WHERE ub.status IS NULL OR ub.status NOT IN ('read', 'reading')
+            `
+        const params = [userID];
 
         if (genre1 || genre2) {
             const conditions = [];
@@ -159,17 +180,25 @@ export async function getRecommendation(req, res) {
 
         let [rows] = await pool.execute(query, params);
         if (rows.length == 0) {
-            const [randomRows] = await pool.execute(`SELECT * FROM Books ORDER BY RAND() LIMIT 1`);
+            const fallbackQuery = `
+                SELECT b.*
+                FROM Books b
+                LEFT JOIN UserBooks ub ON b.bookID = ub.bookID AND ub.userID = ?
+                WHERE ub.status IS NULL OR ub.status NOT IN ('read', 'reading')
+                ORDER BY RAND() LIMIT 1
+            `
+            const [randomRows] = await pool.execute(fallbackQuery, [userID]);
             rows = randomRows;
         }
 
-        console.log("Returned book:", rows[0]);
         res.status(200).json({ books: rows[0] })
     } catch(err) {
         res.status(500).json({ message: "Server error" });
     }
 }
 
+// ROUTE: router.get("/userReviews/:bookID", authenticate, getUserReview);
+// PURPOSE: Get a user's review by bookID. 
 export async function getUserReview(req, res) {
     try {
         const userID = req.user.id;
@@ -181,7 +210,6 @@ export async function getUserReview(req, res) {
         );
 
         if (rows.length === 0) {
-            // No review found for this user/book
             return res.status(200).json({ rating: 0, reviewText: "" });
         }
 
@@ -192,15 +220,16 @@ export async function getUserReview(req, res) {
     }
 }
 
+// ROUTE: router.get("/search", authenticate, searchBooks);
+// PURPOSE: Search for books in the database by author last name, title, and ISBN concurrently.
 export async function searchBooks(req, res) {
     try {
-        const { qu } = req.query; // i.e. ?qu=search term
+        const { qu } = req.query;
 
         if (!qu) {
             return res.status(400).json({ message: "Some query is required." });
         }
 
-        // Uses case insensitive search (Like)
         const searchQuery = `
             SELECT bookID, title, authorFirst, authorLast, coverImg AS coverSrc 
             FROM Books
@@ -217,6 +246,10 @@ export async function searchBooks(req, res) {
     }
 }
 
+// POST Controllers
+
+// ROUTE: router.post("/books", authenticate, upload.single("coverImg"), addBook);
+// PURPOSE: Allows user to add a book to the database.
 export async function addBook(req, res) {
     const { title, authorFirst, authorLast, publisher, publicationDate, pageCount, isbn, genre, synopsis } = req.body;
     const coverImg = req.file ? req.file.filename: null;
@@ -229,6 +262,8 @@ export async function addBook(req, res) {
     }
 }
 
+// ROUTE: router.post("/books/:bookID/review", authenticate, addReview);
+// PURPOSE: Allows user to add a review to a book in their catalog.
 export async function addReview(req, res) {
     try {
         const userID = req.user.id;
@@ -247,6 +282,10 @@ export async function addReview(req, res) {
     }
 }
 
+// PUT Controllers
+
+// ROUTE: router.put("/books/:bookID", authenticate, upload.single("coverImg"), updateBook);
+// PURPOSE: Allows user to update a book in the database.
 export async function updateBook(req, res) {
     try {
         const { bookID } = req.params;
@@ -259,23 +298,24 @@ export async function updateBook(req, res) {
             pageCount,
             isbn,
             genre,
-            synopsis,
-            coverImg
+            synopsis
         } = req.body;
+
+        const coverImg = req.file ? req.file.filename : null;
 
         const fields = [];
         const values = [];
 
-        if (title !== undefined) { fields.push('title = ?'); values.push(title); }
-        if (authorFirst !== undefined) { fields.push('authorFirst = ?'); values.push(authorFirst); }
-        if (authorLast !== undefined) { fields.push('authorLast = ?'); values.push(authorLast); }
-        if (publisher !== undefined) { fields.push('publisher = ?'); values.push(publisher); }
-        if (publicationDate !== undefined) { fields.push('publicationDate = ?'); values.push(publicationDate); }
-        if (pageCount !== undefined) { fields.push('pageCount = ?'); values.push(pageCount); }
-        if (isbn !== undefined) { fields.push('isbn = ?'); values.push(isbn); }
-        if (genre !== undefined) { fields.push('genre = ?'); values.push(genre); }
-        if (synopsis !== undefined) { fields.push('synopsis = ?'); values.push(synopsis); }
-        if (coverImg !== undefined) { fields.push('coverImg = ?'); values.push(coverImg); }
+        if (title) { fields.push('title = ?'); values.push(title); }
+        if (authorFirst) { fields.push('authorFirst = ?'); values.push(authorFirst); }
+        if (authorLast) { fields.push('authorLast = ?'); values.push(authorLast); }
+        if (publisher) { fields.push('publisher = ?'); values.push(publisher); }
+        if (publicationDate) { fields.push('publicationDate = ?'); values.push(publicationDate); }
+        if (pageCount) { fields.push('pageCount = ?'); values.push(Number(pageCount)); }
+        if (isbn) { fields.push('isbn = ?'); values.push(isbn); }
+        if (genre) { fields.push('genre = ?'); values.push(genre); }
+        if (synopsis) { fields.push('synopsis = ?'); values.push(synopsis); }
+        if (coverImg) { fields.push('coverImg = ?'); values.push(coverImg); }
 
         if (fields.length === 0) {
             return res.status(400).json({ message: "No fields provided for update." });
@@ -302,78 +342,8 @@ export async function updateBook(req, res) {
     }
 }
 
-export async function updateUserBookStatus(req, res) {
-    try {
-        const { bookID } = req.params;
-        const { status } = req.body;
-        const userID = req.user.id;
-
-        if (!status) return res.status(400).json({ message: "Status is required" });
-
-        const completedAt = status === "read" ? new Date() : null;
-
-        const [rows] = await pool.query(
-            "SELECT * FROM UserBooks WHERE userID = ? AND bookID = ?",
-            [userID, bookID]
-        );
-
-        if (rows.length === 0) {
-            await pool.query(
-                "INSERT INTO UserBooks (userID, bookID, completedAt, status) VALUES (?, ?, ?, ?)",
-                [userID, bookID, completedAt, status]
-            );
-        } else {
-            await pool.query(
-                "UPDATE UserBooks SET status = ?, completedAt = ? WHERE userID = ? AND bookID = ?",
-                [status, completedAt, userID, bookID]
-            );
-        }
-
-        res.status(200).json({ message: "Book status updated successfully" });
-    } catch(err) {
-        console.error(err);
-        res.status(500).json({ message: "Server error" });        
-    }
-}
-
-export async function updateUserReview(req, res) {
-    try {
-        const userID = req.user.id;
-        const { bookID } = req.params;
-        const { rating, reviewText } = req.body;
-
-        if (rating === undefined && reviewText === undefined) {
-            return res.status(400).json({ message: "Nothing to update." });
-        }
-
-        const [updateResults] = await pool.query(
-            `
-            UPDATE UserReviews
-            SET rating = COALESCE(?, rating),
-                reviewText = COALESCE(?, reviewText)
-            WHERE userID = ? AND bookID = ?
-            `,
-            [rating, reviewText, userID, bookID]
-        );
-
-        if (updateResults.affectedRows === 0) {
-            await pool.query(
-                `
-                INSERT INTO UserReviews (userID, bookID, rating, reviewText)
-                VALUES (?, ?, ?, ?)
-                `,
-                [userID, bookID, rating, reviewText]
-            );
-            return res.status(201).json({ message: "Review created successfully." });
-        } 
-
-        res.status(200).json({ message: "Review updated successfully." });
-
-    } catch(err) {
-        res.status(500).json({ message: "Server error." })
-    }
-}
-
+// ROUTE: router.put("/users/profile", authenticate, updateProfile);
+// PURPOSE: Allows user to update their profile information in the database.
 export async function updateProfile(req, res) {
     try {
         const userID = req.user.id;
@@ -412,6 +382,88 @@ export async function updateProfile(req, res) {
     }
 }
 
+// PATCH Controllers
+
+// ROUTE: router.patch("/userBooks/:bookID", authenticate, updateUserBookStatus);
+// PURPOSE: Update the status of a book in the user's catalog (i.e. Wishlist, Reading, Read).
+export async function updateUserBookStatus(req, res) {
+    try {
+        const { bookID } = req.params;
+        const { status } = req.body;
+        const userID = req.user.id;
+
+        if (!status) return res.status(400).json({ message: "Status is required" });
+
+        const completedAt = status === "read" ? new Date() : null;
+
+        const [rows] = await pool.query(
+            "SELECT * FROM UserBooks WHERE userID = ? AND bookID = ?",
+            [userID, bookID]
+        );
+
+        if (rows.length === 0) {
+            await pool.query(
+                "INSERT INTO UserBooks (userID, bookID, completedAt, status) VALUES (?, ?, ?, ?)",
+                [userID, bookID, completedAt, status]
+            );
+        } else {
+            await pool.query(
+                "UPDATE UserBooks SET status = ?, completedAt = ? WHERE userID = ? AND bookID = ?",
+                [status, completedAt, userID, bookID]
+            );
+        }
+
+        res.status(200).json({ message: "Book status updated successfully" });
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });        
+    }
+}
+
+// ROUTE: router.patch("/userReviews/:bookID", authenticate, updateUserReview);
+// PURPOSE: Update a user's review of a book in the database.
+export async function updateUserReview(req, res) {
+    try {
+        const userID = req.user.id;
+        const { bookID } = req.params;
+        const { rating, reviewText } = req.body;
+
+        if (rating === undefined && reviewText === undefined) {
+            return res.status(400).json({ message: "Nothing to update." });
+        }
+
+        const [updateResults] = await pool.query(
+            `
+            UPDATE UserReviews
+            SET rating = COALESCE(?, rating),
+                reviewText = COALESCE(?, reviewText)
+            WHERE userID = ? AND bookID = ?
+            `,
+            [rating, reviewText, userID, bookID]
+        );
+
+        if (updateResults.affectedRows === 0) {
+            await pool.query(
+                `
+                INSERT INTO UserReviews (userID, bookID, rating, reviewText)
+                VALUES (?, ?, ?, ?)
+                `,
+                [userID, bookID, rating, reviewText]
+            );
+            return res.status(201).json({ message: "Review created successfully." });
+        } 
+
+        res.status(200).json({ message: "Review updated successfully." });
+
+    } catch(err) {
+        res.status(500).json({ message: "Server error." })
+    }
+}
+
+// DELETE Controllers
+
+// ROUTE: router.delete("/books/:bookID", authenticate, deleteBook);
+// PURPOSE: Delete a book from the database.
 export async function deleteBook(req, res) {
     try {
         const { bookID } = req.params;

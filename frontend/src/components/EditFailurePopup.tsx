@@ -6,7 +6,7 @@ export function EditFailurePopup({ isOpen, onClose }: PopupProps) {
     return(
         <div className="popup-overlay" onClick={onClose}>
             <div id="edit-failure-popup" onClick={(e) => e.stopPropagation()}>
-                <p>Book not edited, please fix required fields.</p>
+                <p>Book not edited, server failure.</p>
                 <button onClick={onClose}>Close</button>
             </div>
         </div>
