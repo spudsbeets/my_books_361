@@ -14,6 +14,7 @@ export function YourBooksPage() {
     const [reading, setReading] = useState<Book[]>([]);
     const [read, setRead] = useState<Book[]>([]);
     const [wishlist, setWishlist] = useState<Book[]>([]);
+    const [funFact, setFunFact] = useState<string>("");
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -47,6 +48,16 @@ export function YourBooksPage() {
 
     },[]);
 
+    const fetchFunFact = async() => {
+        const res = await fetch("http://localhost:3000/fact/random", {
+            method: "GET"
+        })
+
+        const data = await res.json();
+
+        setFunFact(data.fact);
+    };
+
     const renderBooks = (books: Book[]) => books.map(b => 
         <BasicBook 
             key={b.bookID} 
@@ -63,6 +74,10 @@ export function YourBooksPage() {
         <NavBar />
         <div id="your-books-div">
             <div id="your-books-left-div">
+                <div id="fun-facts-div">
+                    <p id="fun-fact-region">{funFact}</p>
+                    <button className="button-class" onClick={fetchFunFact}>Get a fun fact!</button>
+                </div>
                 <div className="your-books-sub-div">
                     <p className="your-books-header">Currently Reading</p>
                     <div className="your-books-container">

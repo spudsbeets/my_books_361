@@ -629,3 +629,13 @@ h2 {
   padding: 25px;
   margin-top: 350px;
 }
+
+#fun-fact-region {
+  text-align: center;
+  font-size: 1.2rem;
+  background-color: #223;
+  border: 3px solid #112;
+  border-radius: 20%;
+  max-width: 30%;
+  padding: 10px;
+}
