@@ -5,9 +5,6 @@ export function CreateAccountPage() {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [birthdate, setBirthdate] = useState<string>("");
-    const [firstName, setFirstName] = useState<string>("");
-    const [lastName, setLastName] = useState<string>("");
     const [error, setError] = useState("");
 
     const navigate = useNavigate();
@@ -22,10 +19,10 @@ export function CreateAccountPage() {
         }
 
         try {
-            const res = await fetch("http://localhost:4020/api/auth/register/", {
+            const res = await fetch("http://localhost:5400/api/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password, firstName, lastName, birthdate })
+                body: JSON.stringify({ email, password })
             })
 
             if (!res.ok) {
@@ -56,12 +53,6 @@ export function CreateAccountPage() {
             <div className="open-div-center">
                 <h2 id="create-header">Create your account and get started tracking your reading!</h2>
                 <form id="create-form" onSubmit={handleSubmit}>
-                    <label htmlFor="first-name">First Name: </label>
-                    <input id="first-name" type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
-                    <label htmlFor="last-name">Last Name: </label>
-                    <input id="last-name" type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
-                    <label htmlFor="birthdate">Birthdate: </label>
-                    <input id="birthdate" type="date" value={birthdate} onChange={(e) => setBirthdate(e.target.value)} required />
                     <label htmlFor="email">Email: </label>
                     <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                     <label htmlFor="password">Password: </label>

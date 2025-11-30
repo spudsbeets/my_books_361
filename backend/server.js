@@ -1,7 +1,7 @@
 import express, { application } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import authRoutes from "./src/routes/authRoutes.js";
+/* import authRoutes from "./src/routes/authRoutes.js"; */
 import bookRoutes from "./src/routes/bookRoutes.js";
 import pool from "./src/db.js";
 import fs from 'fs';
@@ -21,7 +21,7 @@ app.use(express.json());
 
 // Routes
 app.get('/', (req, res) => res.send('Server running!'));
-app.use('/api/auth', authRoutes);
+/* app.use('/api/auth', authRoutes); */
 app.use('/api/books', bookRoutes);
 app.use('/uploads', express.static(path.join(process.cwd(), 'src/uploads')));
 

@@ -1,24 +1,34 @@
 import { NavBar } from "../components/NavBar"
 import { UpdateProfilePopup } from "../components/UpdateProfilePopup"
 import { useState, useEffect } from "react"
+import { jwtDecode } from "jwt-decode"
 
 export function ProfilePage() {
+
     const [isProfilePopup, setProfilePopup] = useState<boolean>(false)
     const [userData, setUserData] = useState({
-        firstName: "",
-        lastName: "",
-        birthdate: "",
         email: ""
     });
 
     const fetchUserData = async () => {
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch("http://localhost:4020/api/books/users", {
-            headers: {
-                Authorization: `Bearer ${token}`
+
+            if (!token) {
+                console.error("No token found.")
+                return;
             }
-        });
+
+            const decoded: any = jwtDecode(token);
+            const userID = decoded.id;
+
+            const response = await fetch(`http://localhost:5400/api/user/${userID}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
+            });
 
             if (!response.ok) {
                 console.error("Failed to fetch user data");
@@ -46,11 +56,8 @@ export function ProfilePage() {
         <NavBar />
         <div id="profile-div">
             <div id="profile-div-left">
-                <h2 id="profile-greeting">Hey {userData.firstName}, glad you're here!</h2>
+                <h2 id="profile-greeting">Hey, glad you're here!</h2>
                 <div id="profile-info-div">
-                    <p className="profile-info">First Name: {userData.firstName}</p>
-                    <p className="profile-info">Last Name: {userData.lastName}</p>
-                    <p className="profile-info">Birthdate: {new Date(userData.birthdate).toLocaleDateString("en-US")}</p>
                     <p className="profile-info">Email: {userData.email}</p>
                 </div>
                 <button className="button-class" onClick={() => setProfilePopup(true)}>Update Profile</button>

@@ -1,4 +1,4 @@
-// import bcrypt from "bcrypt";
+/* // import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import pool from "../db.js";
 
@@ -52,4 +52,4 @@ export async function loginUser(req, res) {
         console.log(err);
         res.status(500).json({ error: err.message })
     }
-}
+} */

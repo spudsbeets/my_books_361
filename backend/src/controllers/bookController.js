@@ -1,5 +1,4 @@
 import pool from '../db.js';
-import { authenticate } from "../middleware/authMiddleware.js"
 
 
 // GET Controllers
@@ -166,14 +165,14 @@ export async function getRecommendation(req, res) {
         if (genre1 || genre2) {
             const conditions = [];
             if (genre1) {
-                conditions.push(`genre = ?`)
+                conditions.push(`b.genre = ?`)
                 params.push(genre1)
             }
             if (genre2) {
-                conditions.push(`genre = ?`)
+                conditions.push(`b.genre = ?`)
                 params.push(genre2)
             }
-            query += ` WHERE ` + conditions.join(" OR ");
+            query += ` AND (` + conditions.join(" OR ") + `)`;
         }
 
         query += ` ORDER BY RAND() LIMIT 1`;

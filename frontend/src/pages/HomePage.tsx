@@ -7,6 +7,9 @@ export function HomePage() {
     const [thisYearRead, setThisYearRead] = useState<number>(0);
     const [currentReads, setCurrentReads] = useState<string[]>([]);
     const [recentReads, setRecentReads] = useState<string[]>([]);
+    const [currentTime, setCurrentTime] = useState<string>("");
+    const [timezone, setTimezone] = useState<string>("");
+    const [coords, setCoords] = useState<{ lat: number, long: number } | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -36,14 +39,44 @@ export function HomePage() {
             setRecentReads(data.recentReads ?? []);
         })
         .catch(err => console.error("Error fetching stats:", err));
+
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    setCoords({
+                        lat: position.coords.latitude,
+                        long: position.coords.longitude
+                    });
+                },
+                (error) => {
+                    console.error("Error getting coordinates:", error)
+                }
+            )
+        } else {
+            console.warn("Geolocation not supported in this browser.")
+        }
     }, []);
+
+    useEffect(() => {
+        fetch("http://localhost:5600/api/timezone", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ lat: coords?.lat, long: coords?.long })
+        })
+        .then(res => res.json())
+        .then(data => {
+            setCurrentTime(data.timeStamp),
+            setTimezone(data.abbreviation)
+        })
+        .catch(err => console.error("Error fetching timezone:", err));
+    },[coords])
 
     return(
         <>
         <NavBar />
         <div id="home-div">
             <div id="home-div-left">
-                <h1 id="home-header">Hey Sean, welcome to your virtual library</h1>
+                <h1 id="home-header">Hi! Welcome to your virtual library</h1>
                 <div id="read-counts-div">
                     <div id="read-all-time-div">
                         <h1>{allTimeRead}</h1>
@@ -89,6 +122,9 @@ export function HomePage() {
                 <p className="open-about" id="home-about">Use this site to track your reading progress, write reviews, get recommendations, and more!</p>
             </div>
         </div>
+        <footer>
+            Date and Time at load: {currentTime}, {timezone}
+        </footer>
         </>
     )
 }

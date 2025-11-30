@@ -11,7 +11,7 @@ export function LoginPage() {
         event.preventDefault();
 
         try {
-            const res = await fetch("http://localhost:4020/api/auth/login/", {
+            const res = await fetch("http://localhost:5400/api/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password })
