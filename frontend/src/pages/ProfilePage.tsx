@@ -53,6 +53,7 @@ export function ProfilePage() {
         });
 
         const data = await res.json();
+        console.log(data.holidays[0] || "no holidays today");
         
         if (data.holidays.length === 0) {
             setHoliday("No holidays today!")

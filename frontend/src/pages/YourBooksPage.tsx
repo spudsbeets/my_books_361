@@ -47,6 +47,7 @@ export function YourBooksPage() {
         })
 
         const data = await res.json();
+        console.log(data.fact);
 
         setFunFact(data.fact);
     };

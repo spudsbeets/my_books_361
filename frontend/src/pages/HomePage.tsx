@@ -66,8 +66,9 @@ export function HomePage() {
         })
         .then(res => res.json())
         .then(data => {
-            setCurrentTime(data.timeStamp),
-            setTimezone(data.abbreviation)
+            setCurrentTime(data.timeStamp);
+            setTimezone(data.abbreviation);
+            console.log(data.timeStamp, data.abbreviation);
         })
         .catch(err => console.error("Error fetching timezone:", err));
     },[coords])

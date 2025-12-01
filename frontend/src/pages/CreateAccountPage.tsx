@@ -32,6 +32,7 @@ export function CreateAccountPage() {
             }
 
             const data = await res.json();
+            console.log(data.id, data.token);
 
             if (data.token) {
                 localStorage.setItem("token", data.token);
