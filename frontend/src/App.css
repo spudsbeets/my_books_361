@@ -639,3 +639,29 @@ h2 {
   max-width: 30%;
   padding: 10px;
 }
+
+#star-div {
+  display: flex;
+  gap: .5rem;
+  background-color: #223
+}
+
+.star-button {
+  font-size: "2rem";
+  color: "#e4e5e9";
+  background: "none";
+  border: "none";
+  cursor: "pointer",
+}
+
+.star-button.active {
+  color: #ffc107;
+}
+
+#search-result {
+  margin-top: 1rem;        
+  max-height: 20rem;       
+  overflow-y: auto;
+  padding-bottom: 20px; 
+  margin-bottom: 20px
+}

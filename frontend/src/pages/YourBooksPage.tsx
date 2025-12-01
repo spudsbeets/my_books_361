@@ -1,19 +1,12 @@
 import { NavBar } from "../components/NavBar"
 import { BasicBook } from "../components/BasicBook"
 import { useEffect, useState } from "react"
-
-interface Book {
-    bookID: number,
-    title: string,
-    author: string,
-    coverSrc: string,
-    rating: string
-}
+import type BasicBookProps from "../interfaces/BasicBookProps"
 
 export function YourBooksPage() {
-    const [reading, setReading] = useState<Book[]>([]);
-    const [read, setRead] = useState<Book[]>([]);
-    const [wishlist, setWishlist] = useState<Book[]>([]);
+    const [reading, setReading] = useState<BasicBookProps[]>([]);
+    const [read, setRead] = useState<BasicBookProps[]>([]);
+    const [wishlist, setWishlist] = useState<BasicBookProps[]>([]);
     const [funFact, setFunFact] = useState<string>("");
 
     useEffect(() => {
@@ -58,7 +51,7 @@ export function YourBooksPage() {
         setFunFact(data.fact);
     };
 
-    const renderBooks = (books: Book[]) => books.map(b => 
+    const renderBooks = (books: BasicBookProps[]) => books.map(b => 
         <BasicBook 
             key={b.bookID} 
             bookID={b.bookID}

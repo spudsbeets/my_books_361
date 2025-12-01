@@ -1,12 +1,5 @@
 import { Link } from "react-router-dom"
-
-interface BasicBookProps {
-    bookID: number,
-    title: string,
-    author: string, 
-    coverSrc: string,
-    rating?: string
-}
+import type BasicBookProps from "../interfaces/BasicBookProps"
 
 export function BasicBook({ bookID, title, author, coverSrc, rating }: BasicBookProps) {
     return(

@@ -3,23 +3,13 @@ import { useState } from "react"
 import { EditFailurePopup } from "../components/EditFailurePopup"
 import { EditSuccessPopup } from "../components/EditSuccessPopup"
 import { useParams } from "react-router-dom"
+import type EditBookProps from "../interfaces/EditBookProps"
 
 export function EditBookPage() {
     const { bookID } = useParams<{ bookID: string }>();
     const [isSuccessPopup, setSuccessPopup] = useState<boolean>(false);
     const [isFailurePopup, setFailurePopup] = useState<boolean>(false);
-    const [formData, setFormData] = useState<{
-        title: string;
-        authorFirst: string;
-        authorLast: string;
-        publisher: string;
-        publicationDate: string;
-        pageCount: string;
-        isbn: string;
-        genre: string;
-        synopsis: string;
-        coverImg: File | null;
-    }>({
+    const [formData, setFormData] = useState<EditBookProps>({
         title: "",
         authorFirst: "",
         authorLast: "",

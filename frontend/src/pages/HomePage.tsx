@@ -13,18 +13,17 @@ export function HomePage() {
     const navigate = useNavigate();
 
     useEffect(() => {
+        // Fetch Book Stats on render
         const token = localStorage.getItem("token");
 
         if (!token) {
             console.warn("No token found. Redirecting to login.");
             navigate("/");
             return;
-            }
+        }
 
         fetch("http://localhost:4020/api/books/stats", {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
         })
         .then(res => {
             if (res.status === 403) {
@@ -40,6 +39,7 @@ export function HomePage() {
         })
         .catch(err => console.error("Error fetching stats:", err));
 
+        // Fetch coordinates for timezone microservice 
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -57,6 +57,7 @@ export function HomePage() {
         }
     }, []);
 
+    // Wait for coordinates to be fetched from navigator, then fetch from microservice
     useEffect(() => {
         fetch("http://localhost:5600/api/timezone", {
             method: "POST",

@@ -3,21 +3,7 @@ import { Link, useParams, useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
 import { DeletePopup } from "../components/DeletePopup"
 import { UpdateReviewPopup } from "../components/UpdateReviewPopup"
-
-interface Book {
-    bookID: number,
-    title: string,
-    authorFirst: string,
-    authorLast: string,
-    coverSrc: string,
-    publisher: string,
-    publicationDate: string,
-    pageCount: number,
-    isbn: string,
-    genre: string,
-    synopsis: string,
-    stars: string
-}
+import type Book from "../interfaces/Book"
 
 export function BookInfoPage() {
     const { bookID } = useParams<{ bookID: string }>();
@@ -35,7 +21,9 @@ export function BookInfoPage() {
             const res = await fetch(`http://localhost:4020/api/books/books/${bookID}`, {
                 headers: { Authorization: `Bearer ${token}`}
             });
+
             const data = await res.json();
+
             setBook({
                 ...data,
                 coverSrc: `http://localhost:4020/uploads/${data.coverSrc}`,
@@ -49,6 +37,7 @@ export function BookInfoPage() {
             const res = await fetch(`http://localhost:4020/api/books/userBooks/${bookID}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
+            
             if (res.ok) {
                 const data = await res.json();
                 setBookStatus(data.status || "not-read");

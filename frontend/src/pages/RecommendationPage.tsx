@@ -1,31 +1,26 @@
 import { NavBar } from "../components/NavBar"
 import { BasicBook } from "../components/BasicBook"
 import { useState } from "react"
+import type BasicBookProps from "../interfaces/BasicBookProps"
 
 export function RecommendationPage() {
     const [mode, setMode] = useState<"random" | "curated">("random")
     const [hasRecommendation, setHasRecommendation] = useState<boolean>(false);
     const [genre1, setGenre1] = useState("sci-fi");
     const [genre2, setGenre2] = useState("fantasy");
-    const [recommendedBook, setRecommendedBook] = useState<{
-        bookID: number;
-        title: string;
-        author: string;
-        coverSrc: string;
-        rating: string;
-        } | null>(null);
+    const [recommendedBook, setRecommendedBook] = useState<BasicBookProps | null>(null);
 
-    function handleRandomMode() {
+    const handleRandomMode = () => {
         setMode("random")
         setHasRecommendation(false)
     }
 
-    function handleCuratedMode() {
+    const handleCuratedMode = () => {
         setMode("curated")
         setHasRecommendation(false)
     }
 
-    async function handleGetRecommendation(event: React.FormEvent) {
+    const handleGetRecommendation = async(event: React.FormEvent) => {
         event.preventDefault();
 
         const token = localStorage.getItem("token");
@@ -36,9 +31,9 @@ export function RecommendationPage() {
 
         try {
             const res = await fetch(url, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             });
 
             if (!res.ok) {

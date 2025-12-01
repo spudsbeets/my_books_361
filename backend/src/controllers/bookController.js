@@ -1,6 +1,5 @@
 import pool from '../db.js';
 
-
 // GET Controllers
 
 // ROUTE: router.get("/books", authenticate, getBooksByStatus);
@@ -28,34 +27,6 @@ export async function getBooksByStatus(req, res) {
     } catch(err) {
         console.log(err);
         res.status(500).json({ message: "Server error" });
-    }
-}
-
-// ROUTE: router.get("/users", authenticate, getUser);
-// PURPOSE: Get a user from the database.
-export async function getUser(req, res) {
-    try {
-        const userID = req.user?.id;
-        if (!userID) {
-            return res.status(401).json({ message: "Unauthorized: missing user ID" });
-        }
-
-        const query = `
-            SELECT userID, firstName, lastName, birthdate, email
-            FROM Users
-            WHERE userID = ?            
-        `;
-
-        const [rows] = await pool.execute(query, [userID]);
-
-        if (rows.length === 0) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        res.status(200).json(rows[0]);
-    } catch(err) {
-        console.error("getUser error:", err);
-        res.status(500).json({ message: "Server error" })        
     }
 }
 
@@ -336,46 +307,6 @@ export async function updateBook(req, res) {
 
         res.status(200).json({ message: "Book updated successfully." });
 
-    } catch(err) {
-        res.status(500).json({ message: "Server error." });
-    }
-}
-
-// ROUTE: router.put("/users/profile", authenticate, updateProfile);
-// PURPOSE: Allows user to update their profile information in the database.
-export async function updateProfile(req, res) {
-    try {
-        const userID = req.user.id;
-        const { firstName, lastName, birthdate, email } = req.body;
-
-        const fields = [];
-        const values = [];
-
-        if (firstName !== undefined) { fields.push('firstName = ?'); values.push(firstName); }
-        if (lastName !== undefined) { fields.push('lastName = ?'); values.push(lastName); }
-        if (birthdate !== undefined) { fields.push('birthdate = ?'); values.push(birthdate); }
-        if (email !== undefined) { fields.push('email = ?'); values.push(email); }
-
-        if (fields.length === 0) {
-            return res.status(400).json({ message: "No fields provided for update." });
-        }
-        
-        const query = `
-            UPDATE Users
-            SET ${fields.join(', ')}
-            WHERE userID = ?
-        `;
-
-        values.push(userID);
-
-        const [result] = await pool.execute(query, values);
-
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: "User not found." });
-        }
-
-        res.status(200).json({ message: "User updated successfully." });
     } catch(err) {
         res.status(500).json({ message: "Server error." });
     }

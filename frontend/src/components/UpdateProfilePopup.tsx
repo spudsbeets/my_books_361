@@ -2,20 +2,16 @@ import type PopupProps from "../interfaces/PopupProps";
 import { useState } from "react"
 
 export function UpdateProfilePopup({ isOpen, onClose }: PopupProps) {
-    const [formData, setFormData] = useState({
-        email: ""
-    })
+    const [email, setEmail] = useState("");
 
     if (!isOpen) return null;
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }))
+        setEmail(e.target.value);
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
 
         try {
             const token = localStorage.getItem("token");
@@ -25,7 +21,7 @@ export function UpdateProfilePopup({ isOpen, onClose }: PopupProps) {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify({ email })
             });
 
             if (!res.ok) {
@@ -46,7 +42,7 @@ export function UpdateProfilePopup({ isOpen, onClose }: PopupProps) {
             <div id="update-profile-popup-div" onClick={(e) => e.stopPropagation()}>
                 <form id="update-profile-popup-form" onSubmit={handleSubmit}>
                     <label htmlFor="email">Email: </label>
-                    <input id="email" type="email" name="email" value={formData.email} onChange={handleChange}></input>
+                    <input id="email" type="email" name="email" value={email} onChange={handleChange}></input>
                     <button className="button-class" type="submit">Update Profile</button>
                 </form>
             </div>

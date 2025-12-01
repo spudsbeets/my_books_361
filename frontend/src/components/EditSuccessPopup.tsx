@@ -1,9 +1,5 @@
 import { useNavigate } from "react-router-dom";
-
-interface EditSuccessProps {
-    isOpen: boolean,
-    bookID?: string
-}
+import type EditSuccessProps from "../interfaces/EditSuccessProps";
 
 export function EditSuccessPopup({ isOpen, bookID }: EditSuccessProps) {
     if (!isOpen) return null;

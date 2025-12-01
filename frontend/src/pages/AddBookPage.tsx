@@ -3,15 +3,7 @@ import { useState, useCallback } from "react"
 import { AddSuccessPopup } from "../components/AddSuccessPopup"
 import { AddFailurePopup } from "../components/AddFailurePopup"
 import { BasicBook } from "../components/BasicBook"
-
-interface BookSearchResult {
-    bookID: number,
-    title: string,
-    authorFirst: string,
-    authorLast: string,
-    coverSrc: string,
-    rating?: string
-}
+import type BookSearchResult from "../interfaces/BookSearchResult"
 
 export function AddBookPage() {
     const [searchTerm, setSearchTerm] = useState('');
@@ -21,8 +13,10 @@ export function AddBookPage() {
     const [isSuccessPopup, setSuccessPopup] = useState<boolean>(false)
     const [isFailurePopup, setFailurePopup] = useState<boolean>(false)
 
+    // Ensures expensive function only executes after delay
     const debounce = (func: Function, delay: number) => {
         let timeoutId: number;
+
         return (...args: any[]) => {
             clearTimeout(timeoutId);
             timeoutId = setTimeout(() => {
@@ -31,6 +25,7 @@ export function AddBookPage() {
         };
     };
 
+    // Debounce = 500ms, useCallback memoizes to ensure debounce functionality.
     const performSearch = useCallback(debounce(async (query: string) => {
         if (query.length < 3) {
             setSearchResults([]);
@@ -69,6 +64,7 @@ export function AddBookPage() {
         performSearch(query);
     };
 
+    // Validation for adding books to database. 
     async function validateInput(event: React.FormEvent) {
         event.preventDefault();
 
@@ -85,11 +81,11 @@ export function AddBookPage() {
 
         try {
             const res = await fetch("http://localhost:4020/api/books/books", {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-            body: formData,
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                body: formData,
             });
 
             const data = await res.json();
@@ -117,7 +113,7 @@ export function AddBookPage() {
                     <input id="book-search" type="search" value={searchTerm} onChange={handleSearchChange} />
                     <p>Search by author last name, title, or ISBN!</p>
                 </div>
-                <div className="mt-4 max-h-80 overflow-y-auto border border-gray-200 rounded-lg">
+                <div id="search-result">
                         {isLoading && searchTerm.length >= 3 && (
                             <div className="p-3 text-center text-blue-500">Searching...</div>
                         )}
