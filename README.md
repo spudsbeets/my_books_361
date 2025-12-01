@@ -10,3 +10,7 @@ Populate .env with database information, follow .env.example
 npm start (backend)
 npm run dev (frontend)
 ```
+
+```
+Note: Microservices exist in private repositories as they include the work of other group members, will limit ability to run program.
+```
