@@ -3,6 +3,11 @@
 ### Tech: TypeScript, React, Express, MySQL, Vite, Microservices Architecture
 
 ```
+Check out the demo video!
+[Click here to watch the demo](https://github.com/spudsbeets/my_books_361/releases/download/v1.0/Portfolio_Project_-_CS361_.Source.mov)
+```
+
+```
 Consider Docker utilization for database
 Clone repository
 npm install
