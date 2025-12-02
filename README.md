@@ -4,7 +4,7 @@
 
 ```
 Check out the demo video!
-[Click here to watch the demo](https://github.com/spudsbeets/my_books_361/releases/download/v1.0/Portfolio_Project_-_CS361_.Source.mov)
+[Click here to watch the demo](https://github.com/spudsbeets/my_books_361/releases/download/v2.0.0/Portfolio_Project_-_CS361_.Source.mp4)
 ```
 
 ```
