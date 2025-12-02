@@ -4,7 +4,7 @@
 
 ```
 Check out the demo video!
-[Click here to watch the demo](https://github.com/spudsbeets/my_books_361/releases/download/v2.0.0/demo.mp4)
+[Click here to watch the demo](https://github.com/spudsbeets/my_books_361/releases/download/2.0.0/demo.mp4)
 ```
 
 ```
